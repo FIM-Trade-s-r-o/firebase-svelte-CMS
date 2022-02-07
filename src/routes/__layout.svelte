@@ -3,6 +3,7 @@
     import '$lib/scss/custom.scss'
     import 'bootstrap-icons/font/bootstrap-icons.css';
     import '$lib/locales/index.ts';
+    import 'sweetalert2/src/sweetalert2.scss';
 </script>
 
 <slot/>

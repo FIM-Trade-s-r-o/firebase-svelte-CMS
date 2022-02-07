@@ -1,0 +1,32 @@
+{
+	"page": {
+		"login": {
+			"title": "Prihlásenie"
+		}
+	},
+	"components": {
+		"auth": {
+			"userNotFound": {
+				"title": "Používateľ nenájdený",
+				"text": "Používateľ so zadanou emailovou adresou nie je registrovaný"
+			},
+			"wrongPassword": {
+				"title": "Zlé heslo"
+			},
+			"emailAlreadyInUse": {
+				"title": "Email už existuje",
+				"text": "Účet viazaný na tento email už existuje"
+			},
+			"invalidEmail": {
+				"title": "Neplatný email"
+			},
+			"accountDisabled": {
+				"title": "Účet suspendovaný",
+				"text": "V prípade nejasností nás kontaktuj"
+			},
+			"other": {
+				"title": "Chyba: "
+			}
+		}
+	}
+}
