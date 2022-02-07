@@ -4,6 +4,13 @@
     import 'bootstrap-icons/font/bootstrap-icons.css';
     import '$lib/locales/index.ts';
     import 'sweetalert2/src/sweetalert2.scss';
+    import '$lib/fonts/comfortaa/comfortaa.css';
+    import { user } from "$lib/firebase/index";
+    import {Container} from "sveltestrap";
+
+    $: console.log($user)
 </script>
 
-<slot/>
+<Container fluid class="h-100 w-100">
+    <slot/>
+</Container>

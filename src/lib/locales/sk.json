@@ -2,6 +2,10 @@
 	"page": {
 		"login": {
 			"title": "Prihlásenie"
+		},
+		"dashboard": {
+			"collections": "Zbierky",
+			"noCollections": "Žiaden upravitelný obsah"
 		}
 	},
 	"components": {

@@ -24,7 +24,7 @@ function UserStoreContract() {
     }
 }
 
-const user = UserStoreContract;
+const user = UserStoreContract();
 
 export {
     auth,

@@ -34,7 +34,8 @@
     import {  user } from "$lib/firebase";
     import { goto } from "$app/navigation";
     import { _ } from 'svelte-i18n';
-    import {handleAuthError} from "$lib/firebase/errorHandling";
+    import { handleAuthError } from "$lib/firebase/errorHandling";
+    import { browser } from "$app/env";
 
     let resetModalIsOpen = false;
     let email = '';
@@ -63,6 +64,10 @@
             await handleAuthError(error)
         }
     }
+
+    $: if ($user && browser) {
+        goto('/dashboard')
+    }
 </script>
 
 <Row class="min-h-100 align-content-center justify-content-center" style="padding-bottom: 30%">
@@ -71,7 +76,8 @@
             <Row>
                 <Col xs="12">
                     <h1 class="text-center">
-                        {$_('page.login.title')}
+                        <!--{$_('page.login.title')}-->
+                        Prihlásenie
                     </h1>
                 </Col>
             </Row>

@@ -2,6 +2,10 @@
 	"page": {
 		"login": {
 			"title": "Log in"
+		},
+		"dashboard": {
+			"collections": "Collections",
+			"noCollections": "No customizable content"
 		}
 	},
 	"components": {
