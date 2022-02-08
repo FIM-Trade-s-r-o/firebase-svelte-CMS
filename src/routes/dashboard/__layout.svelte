@@ -8,11 +8,12 @@
     import { browser } from "$app/env";
     import { goto } from "$app/navigation";
     import {_} from "svelte-i18n";
-    import { collections } from "$lib/config";
+    import config from "$lib/config";
 
     $: if (!$user && browser) {
         goto('/')
     }
+    const collections = config.collections;
 
 </script>
 
@@ -23,9 +24,9 @@
             <!--{$_('page.dashboard.collections')}-->
         </h4>
         <ListGroup flush class="w-100">
-            {#each collections as collection}
-                <ListGroupItem href="/dashboard/{collection}" class="border-1 text-center mb-1">
-                    {collection}
+            {#each collections as { name }}
+                <ListGroupItem href="/dashboard/collections/{name}" class="border-1 text-center mb-1">
+                    {name}
                 </ListGroupItem>
             {:else}
                 {$_('page.dashboard.noCollections')}

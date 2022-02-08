@@ -2,10 +2,10 @@
     import {signInWithEmailAndPassword} from "@firebase/auth";
     import { auth } from "$lib/firebase";
     import { Toast } from "$lib/utils/alert";
-    import { isServiceAccount } from "$lib/config"
+    import config from "$lib/config/"
 
     const verifyUser = async (email, password) => {
-        if (!isServiceAccount(email)) throw { code: 'userIsNotAdmin', message: '' }
+        if (!config.isAdminAccount(email)) throw { code: 'userIsNotAdmin', message: '' }
         const userCredential = await signInWithEmailAndPassword(auth, email, password)
         await Toast.fire({
             icon: 'success',
