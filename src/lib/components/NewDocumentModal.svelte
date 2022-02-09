@@ -3,7 +3,8 @@
     import { collection, addDoc } from "firebase/firestore";
     import PropertyInput from "$lib/components/PropertyInput.svelte";
     import type Schema from "$lib/schemas/lib";
-    import {firestore} from "$lib/firebase";
+    import { firestore } from "$lib/firebase";
+    import { Toast } from "$lib/utils/alert";
 
     export let collectionName: string;
     export let schema: Schema;
@@ -15,7 +16,22 @@
         isOpen = !isOpen;
     }
     const submit = async () => {
-        const docRef = await addDoc(collectionRef, data);
+        try {
+            const docRef = await addDoc(collectionRef, data);
+            isOpen = false;
+            await Toast.fire({
+                icon: "success",
+                title: "Dokument úspešne vytvorený",
+                text: `ID dokumentu: ${docRef.id}`
+            })
+        } catch (error) {
+            await Toast.fire({
+                icon: "error",
+                title: "Chyba",
+                text: error
+            })
+            throw error;
+        }
     }
 
 </script>
