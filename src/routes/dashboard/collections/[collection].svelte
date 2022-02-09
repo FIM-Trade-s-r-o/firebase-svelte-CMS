@@ -27,7 +27,7 @@
         };
     }
 </script>
-<script>
+<script lang="ts">
     import {
         Row,
         Col,
@@ -37,21 +37,32 @@
     import Document from "$lib/components/Document.svelte";
     import EmptyCollection from "$lib/components/EmptyCollection.svelte";
     import config from "$lib/config";
+    import NewDocumentModal from "$lib/components/NewDocumentModal.svelte";
 
-    export let collectionData;
-    export let collectionName;
+    export let collectionData: object;
+    export let collectionName: string;
     const schema = config.getCollectionSchema(collectionName);
+    let isNewDocumentModalOpen = false;
+    const openNewDocumentModal = () => {
+      isNewDocumentModalOpen = true;
+    }
+
 </script>
 
-<Row class="justify-content-end bg-dark">
+<Row class="justify-content-end align-items-center bg-dark">
     <Col class="text-white">
         <h4 class="my-3">
             {collectionName}
         </h4>
     </Col>
     <Col xs="auto">
-        <Button href="/dashboard" color="transparent" class="m-2">
-            <Icon name="arrow-left" class="h4 text-warning"/>
+        <Button on:click={openNewDocumentModal} color="primary" outline class="border-0 m-2">
+            <Icon name="plus" class="h3"/>
+        </Button>
+    </Col>
+    <Col xs="auto">
+        <Button href="/dashboard" color="warning" outline class="border-0 m-2">
+            <Icon name="arrow-left" class="h4"/>
         </Button>
     </Col>
 </Row>
@@ -65,6 +76,7 @@
             {:else}
                 <EmptyCollection />
             {/each}
+            <NewDocumentModal {collectionName} {schema} bind:isOpen={isNewDocumentModalOpen}/>
         {/await}
     </Col>
 </Row>
