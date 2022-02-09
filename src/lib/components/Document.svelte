@@ -34,15 +34,19 @@
 
 </script>
 
-<Button on:click={toggleModal} color="transparent" class="m-0 p-0">
-    <Row class="border-bottom">
-        {#each schema.properties as property}
-            <Col>
-                {data[property]}
-            </Col>
-        {/each}
-    </Row>
-</Button>
+<Row>
+    <Col>
+        <Button on:click={toggleModal} color="transparent" class="m-0 p-0 w-100">
+            <Row class="border-bottom">
+                {#each schema.properties as property}
+                    <Col>
+                        {data[property]}
+                    </Col>
+                {/each}
+            </Row>
+        </Button>
+    </Col>
+</Row>
 
 <Modal isOpen={isModalOpen} toggle={toggleModal} fullscreen>
     <ModalHeader toggle={toggleModal}>
