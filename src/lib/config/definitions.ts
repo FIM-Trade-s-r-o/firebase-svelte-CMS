@@ -11,15 +11,15 @@ interface GlobalConfig {
 }
 
 class Config {
-    adminAccounts: Array<string>;
+    #adminAccounts: Array<string>;
     collections: Array<Collection>;
     constructor({ adminAccounts, collections }: GlobalConfig) {
-        this.adminAccounts = adminAccounts;
+        this.#adminAccounts = adminAccounts;
         this.collections = collections;
     }
     isAdminAccount(emailToCheck: string): boolean {
         let match = false;
-        this.adminAccounts.forEach(email => {
+        this.#adminAccounts.forEach(email => {
             if (email === emailToCheck) {
                 match = true;
             }

@@ -8,7 +8,7 @@
     import { user } from "$lib/firebase/index";
     import {Container} from "sveltestrap";
 
-    $: console.log($user)
+    // $: console.log($user)
 </script>
 
 <Container fluid class="h-100 w-100">

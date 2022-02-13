@@ -2,15 +2,14 @@
     import { firestore } from "$lib/firebase/index";
     import { collection, getDocs } from 'firebase/firestore';
 
-    export async function load({ params }) {
-        console.log(params)
-        const collectionName = params.collection;
+    export async function load({ page }) {
+        const collectionName = page.params.collection;
 
         const docsSnap = await getDocs(collection(firestore, collectionName));
 
         let collectionData = [];
         await docsSnap.forEach(document => {
-            console.log(document)
+            //console.log(document)
             collectionData = [
                 ...collectionData,
                 {

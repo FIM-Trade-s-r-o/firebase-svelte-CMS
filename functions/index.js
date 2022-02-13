@@ -1,9 +1,14 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const functions = require("firebase-functions");
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+let cmsServer;
+exports.cms = functions.region("us-central1").https.onRequest(async (request, response) => {
+    if (!cmsServer) {
+        functions.logger.info("Initialising SvelteKit SSR entry");
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        cmsServer = require("./cms/index").default;
+        functions.logger.info("SvelteKit SSR entry initialised!");
+    }
+    functions.logger.info("Requested resource: " + request.originalUrl);
+    return cmsServer(request, response);
+});

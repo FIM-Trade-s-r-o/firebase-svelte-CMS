@@ -4,7 +4,7 @@ import { sectionSchema } from "$lib/schemas/schemas";
 
 // CMS config
 const index = new Config({
-    adminAccounts: ['filip.holcik.official@gmail.com'],
+    adminAccounts: ['filip.holcik.official@gmail.com', 'farbysupercolor@gmail.com'],
     collections: [{
         name: 'sections',
         schema: sectionSchema
