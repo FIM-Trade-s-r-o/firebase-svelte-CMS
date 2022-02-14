@@ -1,5 +1,5 @@
-<script context="module">
-    import { firestore } from "$lib/firebase/index";
+<script context="module" lang="ts">
+    import { firestore } from "$lib/firebase";
     import { collection, getDocs } from 'firebase/firestore';
 
     export async function load({ page }) {
@@ -37,6 +37,7 @@
     import EmptyCollection from "$lib/components/EmptyCollection.svelte";
     import config from "$lib/config";
     import NewDocumentModal from "$lib/components/NewDocumentModal.svelte";
+    import CollectionHeader from "$lib/components/CollectionHeader.svelte";
 
     export let collectionData: object;
     export let collectionName: string;
@@ -70,6 +71,7 @@
         {#await collectionData}
             nacitavanie
         {:then collection}
+            <CollectionHeader />
             {#each collection as document}
                 <Document collection={collectionName} {schema} data={document}/>
             {:else}
