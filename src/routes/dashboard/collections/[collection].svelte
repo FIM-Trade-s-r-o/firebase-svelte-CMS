@@ -31,7 +31,7 @@
         Row,
         Col,
         Button,
-        Icon
+        Icon, Spinner
     } from "sveltestrap";
     import Document from "$lib/components/Document.svelte";
     import EmptyCollection from "$lib/components/EmptyCollection.svelte";
@@ -69,9 +69,9 @@
 <Row>
     <Col xs="12">
         {#await collectionData}
-            nacitavanie
+            <Spinner type="grow"/>
         {:then collection}
-            <CollectionHeader />
+            <CollectionHeader {schema}/>
             {#each collection as document}
                 <Document collection={collectionName} {schema} data={document}/>
             {:else}

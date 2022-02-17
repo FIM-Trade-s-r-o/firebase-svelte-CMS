@@ -39,7 +39,7 @@
         <Button on:click={toggleModal} color="transparent" class="m-0 p-0 w-100">
             <Row class="border-bottom">
                 {#each schema.properties as property}
-                    <Col>
+                    <Col style="max-height: 10rem; overflow: auto;">
                         {data[property]}
                     </Col>
                 {/each}
