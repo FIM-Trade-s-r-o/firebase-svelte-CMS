@@ -29374,6 +29374,9 @@ AuthImpl.prototype.setPersistence = async () => {
 // node_modules/@firebase/auth/dist/node-esm/index.js
 var import_node_fetch = __toModule(require_lib2());
 
+// node_modules/firebase/auth/dist/index.mjs
+init_shims();
+
 // node_modules/firebase/firestore/dist/index.mjs
 init_shims();
 
@@ -40176,9 +40179,6 @@ var name4 = "firebase";
 var version4 = "9.6.6";
 registerVersion(name4, version4, "app");
 
-// node_modules/firebase/auth/dist/index.mjs
-init_shims();
-
 // .svelte-kit/output/server/app.js
 var import_sweetalert2 = __toModule(require_sweetalert2_all());
 var __accessCheck = (obj, member, msg) => {
@@ -40516,9 +40516,9 @@ function init(settings = default_settings) {
     amp: false,
     dev: false,
     entry: {
-      file: assets + "/_app/start-38f932a8.js",
+      file: assets + "/_app/start-c503911c.js",
       css: [assets + "/_app/assets/start-61d1577b.css", assets + "/_app/assets/vendor-28d9e71a.css"],
-      js: [assets + "/_app/start-38f932a8.js", assets + "/_app/chunks/vendor-6e91e2be.js", assets + "/_app/chunks/preload-helper-ec9aa979.js", assets + "/_app/chunks/singletons-12a22614.js"]
+      js: [assets + "/_app/start-c503911c.js", assets + "/_app/chunks/vendor-2ae1a80a.js", assets + "/_app/chunks/preload-helper-ec9aa979.js", assets + "/_app/chunks/singletons-12a22614.js"]
     },
     fetched: void 0,
     floc: false,
@@ -40601,7 +40601,7 @@ var module_lookup = {
     return _collection_;
   })
 };
-var metadata_lookup = { "src/routes/__layout.svelte": { "entry": "pages/__layout.svelte-284cba7c.js", "css": ["assets/pages/__layout.svelte-efe1f589.css", "assets/vendor-28d9e71a.css"], "js": ["pages/__layout.svelte-284cba7c.js", "chunks/vendor-6e91e2be.js", "chunks/preload-helper-ec9aa979.js", "chunks/index-9aa818b4.js"], "styles": [] }, ".svelte-kit/build/components/error.svelte": { "entry": "error.svelte-b6abe3bf.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["error.svelte-b6abe3bf.js", "chunks/vendor-6e91e2be.js"], "styles": [] }, "src/routes/index.svelte": { "entry": "pages/index.svelte-ccb363b1.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/index.svelte-ccb363b1.js", "chunks/vendor-6e91e2be.js", "chunks/index-fb678609.js", "chunks/alert-e611833d.js", "chunks/index-9aa818b4.js", "chunks/env-2482f206.js", "chunks/singletons-12a22614.js"], "styles": [] }, "src/routes/dashboard/__layout.svelte": { "entry": "pages/dashboard/__layout.svelte-de4fbcb4.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/__layout.svelte-de4fbcb4.js", "chunks/vendor-6e91e2be.js", "chunks/index-9aa818b4.js", "chunks/env-2482f206.js", "chunks/singletons-12a22614.js", "chunks/index-fb678609.js"], "styles": [] }, "src/routes/dashboard/index.svelte": { "entry": "pages/dashboard/index.svelte-eb421247.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/index.svelte-eb421247.js", "chunks/vendor-6e91e2be.js"], "styles": [] }, "src/routes/dashboard/collections/[collection].svelte": { "entry": "pages/dashboard/collections/_collection_.svelte-3af0b1f8.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/collections/_collection_.svelte-3af0b1f8.js", "chunks/vendor-6e91e2be.js", "chunks/index-9aa818b4.js", "chunks/alert-e611833d.js", "chunks/index-fb678609.js"], "styles": [] } };
+var metadata_lookup = { "src/routes/__layout.svelte": { "entry": "pages/__layout.svelte-5469d47d.js", "css": ["assets/pages/__layout.svelte-efe1f589.css", "assets/vendor-28d9e71a.css"], "js": ["pages/__layout.svelte-5469d47d.js", "chunks/vendor-2ae1a80a.js", "chunks/preload-helper-ec9aa979.js", "chunks/index-971cc18e.js"], "styles": [] }, ".svelte-kit/build/components/error.svelte": { "entry": "error.svelte-897c30c9.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["error.svelte-897c30c9.js", "chunks/vendor-2ae1a80a.js"], "styles": [] }, "src/routes/index.svelte": { "entry": "pages/index.svelte-9d63befb.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/index.svelte-9d63befb.js", "chunks/vendor-2ae1a80a.js", "chunks/index-fb678609.js", "chunks/alert-cbdcdbea.js", "chunks/index-971cc18e.js", "chunks/env-2482f206.js", "chunks/singletons-12a22614.js", "chunks/errorHandling-18b571f3.js"], "styles": [] }, "src/routes/dashboard/__layout.svelte": { "entry": "pages/dashboard/__layout.svelte-5b35f6af.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/__layout.svelte-5b35f6af.js", "chunks/vendor-2ae1a80a.js", "chunks/index-971cc18e.js", "chunks/env-2482f206.js", "chunks/singletons-12a22614.js", "chunks/index-fb678609.js"], "styles": [] }, "src/routes/dashboard/index.svelte": { "entry": "pages/dashboard/index.svelte-f95cb90c.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/index.svelte-f95cb90c.js", "chunks/vendor-2ae1a80a.js", "chunks/index-971cc18e.js", "chunks/alert-cbdcdbea.js", "chunks/errorHandling-18b571f3.js"], "styles": [] }, "src/routes/dashboard/collections/[collection].svelte": { "entry": "pages/dashboard/collections/_collection_.svelte-c0194a8a.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/collections/_collection_.svelte-c0194a8a.js", "chunks/vendor-2ae1a80a.js", "chunks/index-971cc18e.js", "chunks/alert-cbdcdbea.js", "chunks/index-fb678609.js"], "styles": [] } };
 async function load_component(file) {
   const { entry, css: css2, js, styles } = metadata_lookup[file];
   return {
@@ -43824,6 +43824,28 @@ var Row = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   classes = classnames(className, noGutters ? "gx-0" : null, form ? "form-row" : "row", ...getCols(cols));
   return `<div${spread([escape_object($$restProps), { class: escape_attribute_value(classes) }], {})}${add_attribute("this", inner, 0)}>${slots.default ? slots.default({}) : ``}</div>`;
 });
+var Spinner = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let classes;
+  let $$restProps = compute_rest_props($$props, ["class", "type", "size", "color"]);
+  let { class: className = "" } = $$props;
+  let { type = "border" } = $$props;
+  let { size = "" } = $$props;
+  let { color = "" } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  if ($$props.type === void 0 && $$bindings.type && type !== void 0)
+    $$bindings.type(type);
+  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
+    $$bindings.size(size);
+  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
+    $$bindings.color(color);
+  classes = classnames(className, size ? `spinner-${type}-${size}` : false, `spinner-${type}`, color ? `text-${color}` : false);
+  return `<div${spread([
+    escape_object($$restProps),
+    { role: "status" },
+    { class: escape_attribute_value(classes) }
+  ], {})}><span class="${"visually-hidden"}">${slots.default ? slots.default({}) : `Loading...`}</span></div>`;
+});
 var _layout$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   return `${validate_component(Container, "Container").$$render($$result, { fluid: true, class: "h-100 w-100" }, {}, {
     default: () => {
@@ -44211,20 +44233,47 @@ var __layout = /* @__PURE__ */ Object.freeze({
   "default": _layout
 });
 var Dashboard = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  return `${validate_component(Row, "Row").$$render($$result, {
-    class: "h-100 justify-content-center align-items-center"
+  let $user, $$unsubscribe_user;
+  $$unsubscribe_user = subscribe(user, (value) => $user = value);
+  $$unsubscribe_user();
+  return `<div class="${"h-100 d-flex flex-column"}">${validate_component(Row, "Row").$$render($$result, {
+    class: "justify-content-between align-items-center bg-dark"
+  }, {}, {
+    default: () => {
+      return `${validate_component(Col, "Col").$$render($$result, { xs: "auto", class: "text-white" }, {}, {
+        default: () => {
+          return `${escape2($user == null ? void 0 : $user.displayName)}`;
+        }
+      })}
+        ${validate_component(Col, "Col").$$render($$result, { xs: "auto" }, {}, {
+        default: () => {
+          return `${validate_component(Button, "Button").$$render($$result, {
+            outline: true,
+            color: "warning",
+            class: "border-0 m-2"
+          }, {}, {
+            default: () => {
+              return `${validate_component(Icon, "Icon").$$render($$result, { name: "box-arrow-in-right" }, {}, {})}`;
+            }
+          })}`;
+        }
+      })}`;
+    }
+  })}
+    ${validate_component(Row, "Row").$$render($$result, {
+    class: "flex-grow-1 justify-content-center align-items-center"
   }, {}, {
     default: () => {
       return `${validate_component(Col, "Col").$$render($$result, { xs: "auto", class: "text-center" }, {}, {
         default: () => {
           return `<h2>N\xE1vod
-        </h2>
-        <p>Pre \xFApravu obsahu vyberte zbierku (dokumentov), potom m\xF4\u017Eete prida\u0165, odstr\xE1ni\u0165 alebo vybra\u0165 dokument na \xFApravu.
-        </p>`;
+            </h2>
+            <p>Pre \xFApravu obsahu vyberte zbierku (dokumentov), potom m\xF4\u017Eete prida\u0165, odstr\xE1ni\u0165 alebo vybra\u0165 dokument na \xFApravu.
+            </p>`;
         }
       })}`;
     }
-  })}`;
+  })}</div>`;
 });
 var index = /* @__PURE__ */ Object.freeze({
   __proto__: null,
@@ -44308,7 +44357,9 @@ var Document = create_ssr_component(($$result, $$props, $$bindings, slots) => {
                 return `${validate_component(Row, "Row").$$render($$result, { class: "border-bottom" }, {}, {
                   default: () => {
                     return `${each(schema.properties, (property) => {
-                      return `${validate_component(Col, "Col").$$render($$result, {}, {}, {
+                      return `${validate_component(Col, "Col").$$render($$result, {
+                        style: "max-height: 10rem; overflow: auto;"
+                      }, {}, {
                         default: () => {
                           return `${escape2(data[property])}
                     `;
@@ -44460,6 +44511,25 @@ var NewDocumentModal = create_ssr_component(($$result, $$props, $$bindings, slot
   } while (!$$settled);
   return $$rendered;
 });
+var CollectionHeader = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let { schema } = $$props;
+  if ($$props.schema === void 0 && $$bindings.schema && schema !== void 0)
+    $$bindings.schema(schema);
+  return `${validate_component(Row, "Row").$$render($$result, {
+    class: "border-bottom border-dark text-center"
+  }, {}, {
+    default: () => {
+      return `${each(schema.properties, (property) => {
+        return `${validate_component(Col, "Col").$$render($$result, {}, {}, {
+          default: () => {
+            return `<h5 class="${"text-capitalize"}">${escape2(property)}</h5>
+        `;
+          }
+        })}`;
+      })}`;
+    }
+  })}`;
+});
 async function load({ page: page2 }) {
   const collectionName = page2.params.collection;
   const docsSnap = await getDocs(collection(firestore, collectionName));
@@ -44530,11 +44600,12 @@ ${validate_component(Row, "Row").$$render($$result, {}, {}, {
               if (is_promise(__value)) {
                 __value.then(null, noop3);
                 return `
-            nacitavanie
+            ${validate_component(Spinner, "Spinner").$$render($$result, { type: "grow" }, {}, {})}
         `;
               }
               return function(collection2) {
                 return `
+            ${validate_component(CollectionHeader, "CollectionHeader").$$render($$result, { schema }, {}, {})}
             ${collection2.length ? each(collection2, (document2) => {
                   return `${validate_component(Document, "Document").$$render($$result, {
                     collection: collectionName,
