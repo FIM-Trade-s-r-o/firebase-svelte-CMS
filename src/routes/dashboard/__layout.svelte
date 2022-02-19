@@ -1,6 +1,7 @@
 <script>
     import {
-        Col,
+        Button,
+        Col, Icon,
         ListGroup, ListGroupItem,
         Row
     } from "sveltestrap";
@@ -32,6 +33,10 @@
                 {$_('page.dashboard.noCollections')}
             {/each}
         </ListGroup>
+        <hr class="my-2 w-100">
+        <Button href="/dashboard/storage/root" color="dark" outline class="w-100 rounded-0">
+            <Icon name="folder2"/> Disk
+        </Button>
     </Col>
     <Col xs="12" md="9" xl="10">
         <slot/>
