@@ -38,7 +38,7 @@
 </script>
 <script lang="ts">
     import Sweetalert from "sweetalert2";
-    import { uploadString } from 'firebase/storage';
+    import { uploadString, uploadBytes } from 'firebase/storage';
     import {
         Row,
         Col,
@@ -77,14 +77,29 @@
             const ghostFile = ref(directory, '.ghostfile')
             await uploadString(ghostFile, '')
             await Toast.fire({
-                title: 'Zložka úspešne vytvorená'
+                title: 'Zložka úspešne vytvorená',
+                icon: 'success'
             })
         }
     }
-    const newFile = () => {
+    const newFile = async () => {
+        const { value: file } = await Sweetalert.fire({
+            title: 'Nahrať súbor',
+            input: 'file',
+            inputAttributes: {
+                'aria-label': 'Súbor'
+            }
+        })
 
+        if (file) {
+            const uploadRef = ref(reference, file.name);
+            await uploadBytes(uploadRef, file);
+            await Toast.fire({
+                title: 'Súbor úspešne nahraný',
+                icon: 'success'
+            })
+        }
     }
-
     $: console.log(folders);
     $: console.log(files);
 </script>

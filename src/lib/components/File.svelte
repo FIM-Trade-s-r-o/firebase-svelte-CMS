@@ -11,8 +11,8 @@
     const name = value.name;
 </script>
 
-<Col xs="12" sm="6" md="4" lg="3" xl="2">
-    <Card class="w-100">
+<Col xs="12" sm="6" md="4" lg="3" xl="2" class="h-auto">
+    <Card class="w-100 h-100">
         <CardBody class="d-flex justify-content-center">
             <Icon name="file-earmark" class="display-3"/>
         </CardBody>
