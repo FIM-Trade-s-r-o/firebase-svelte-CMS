@@ -8,7 +8,7 @@
         CardBody,
         CardFooter,
         Icon,
-        ListGroupItem
+        ListGroupItem, Offcanvas
     } from "sveltestrap";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
 
@@ -16,9 +16,13 @@
     const dispatch = createEventDispatcher();
     let name;
     let contextMenuOpener: boolean;
+    let showDetails = false;
 
     const openContextMenu = (event) => {
         contextMenuOpener = event;
+    }
+    const toggleDetails = () => {
+        showDetails = !showDetails;
     }
     const deleteFile = async () => {
         await deleteObject(value);
@@ -41,8 +45,17 @@
     $: name = value.name;
 </script>
 
+<ContextMenu bind:opener={contextMenuOpener}>
+    <ListGroupItem tag="button" on:click={copyLink}>
+        <Icon name="clipboard"/> Skopírovať link
+    </ListGroupItem>
+    <ListGroupItem tag="button" on:click={deleteFile}>
+        <Icon name="trash"/> Vymazať súbor
+    </ListGroupItem>
+</ContextMenu>
+
 <Col xs="12" sm="6" md="4" lg="3" xl="2" class="h-auto mb-4">
-    <div on:contextmenu|preventDefault|stopPropagation={openContextMenu} class="w-100 h-100">
+    <div on:click={toggleDetails} on:contextmenu|preventDefault|stopPropagation={openContextMenu} class="w-100 h-100">
         <Card class="w-100 h-100">
             <CardBody class="d-flex justify-content-center">
                 <Icon name="file-earmark" class="display-3"/>
@@ -56,11 +69,6 @@
     </div>
 </Col>
 
-<ContextMenu bind:opener={contextMenuOpener}>
-    <ListGroupItem tag="button" on:click={copyLink}>
-        <Icon name="clipboard"/> Skopírovať link
-    </ListGroupItem>
-    <ListGroupItem tag="button" on:click={deleteFile}>
-        <Icon name="trash"/> Vymazať súbor
-    </ListGroupItem>
-</ContextMenu>
+<Offcanvas isOpen={showDetails} placement="end" header={name}>
+
+</Offcanvas>
