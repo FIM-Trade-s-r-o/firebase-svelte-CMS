@@ -158,7 +158,7 @@
         <Col>
             <Row>
                 <FoldersList items={folders}/>
-                <FilesList items={files}/>
+                <FilesList items={files} on:refreshRequest={refreshItems}/>
             </Row>
         </Col>
     </Row>
