@@ -27,7 +27,7 @@
     $: open(opener);
 </script>
 
-<svelte:window bind:innerWidth={screenWidth}/>
+<svelte:window bind:innerWidth={screenWidth} on:resize={close}/>
 <svelte:body on:click={close} on:contextmenu|preventDefault={close}/>
 
 {#if isOpen}

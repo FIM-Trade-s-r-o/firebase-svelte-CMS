@@ -40,15 +40,18 @@
 <script lang="ts">
     import Sweetalert from "sweetalert2";
     import { uploadString, uploadBytes } from 'firebase/storage';
+    import { goto } from "$app/navigation";
+    import { Toast } from "$lib/utils/alert";
     import {
         Row,
         Col,
         Button,
-        Icon
+        Icon,
+        Breadcrumb,
+        BreadcrumbItem
     } from "sveltestrap";
     import FoldersList from "$lib/components/FoldersList.svelte";
     import FilesList from "$lib/components/FilesList.svelte";
-    import {Toast} from "$lib/utils/alert";
 
     export let reference;
     export let path;
@@ -124,14 +127,38 @@
             }
         });
     }
+    const goBack = () => {
+        if (path === 'root') {
+            goto('/dashboard');
+        } else {
+            if (path.includes('/')) {
+                const newPath = path.slice(0, path.lastIndexOf('/'))
+                goto(`/dashboard/storage/${newPath.replaceAll('/','|')}`)
+                console.log(newPath)
+            } else {
+                goto(`/dashboard/storage/root`)
+            }
+        }
+    }
 </script>
 
 <div class="h-100 d-flex flex-column">
     <Row class="justify-content-end align-items-center bg-dark">
-        <Col class="text-white">
-            <h4 class="my-3">
-                {path}
-            </h4>
+        <Col>
+            <Breadcrumb class="my-2 text-white h3">
+                <BreadcrumbItem>
+                    /
+                </BreadcrumbItem>
+                {#each path.split('/') as directory}
+                    {#if directory !== 'root'}
+                        <BreadcrumbItem>
+                            {directory}
+                        </BreadcrumbItem>
+                    {/if}
+                {:else}
+                    /
+                {/each}
+            </Breadcrumb>
         </Col>
         <Col xs="auto">
             <Button on:click={newFolder} color="primary" outline class="border-0 my-2">
@@ -142,8 +169,8 @@
             </Button>
         </Col>
         <Col xs="auto">
-            <Button href="/dashboard" color="warning" outline class="border-0 m-2">
-                <Icon name="arrow-left" class="h4"/>
+            <Button on:click={goBack} color="warning" outline class="border-0 m-2">
+                <Icon name={path === 'root' ? 'arrow-left' : 'arrow-up'} class="h4"/>
             </Button>
         </Col>
     </Row>
