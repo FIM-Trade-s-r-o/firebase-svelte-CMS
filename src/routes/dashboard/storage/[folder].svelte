@@ -3,9 +3,7 @@
     import { storage } from "$lib/firebase";
 
     export async function load({ page }) {
-        const path = page.params.folder;
-        console.log(path)
-
+        const path = (page.params.folder).replaceAll('|', '/');
         const reference = ref(storage, path === 'root' ? '/' : path);
 
         const response = await listAll(reference);
@@ -20,10 +18,13 @@
             ]
         });
         response.items.forEach((itemRef) => {
-            files = [
-                ...files,
-                itemRef
-            ]
+            console.log(itemRef.name)
+            if (itemRef.name !== '.ghostfile') {
+                files = [
+                    ...files,
+                    itemRef
+                ]
+            }
         });
 
         return {
@@ -80,6 +81,7 @@
                 title: 'Zložka úspešne vytvorená',
                 icon: 'success'
             })
+            await refreshItems();
         }
     }
     const newFile = async () => {
@@ -94,37 +96,70 @@
         if (file) {
             const uploadRef = ref(reference, file.name);
             await uploadBytes(uploadRef, file);
+            await refreshItems();
             await Toast.fire({
                 title: 'Súbor úspešne nahraný',
                 icon: 'success'
             })
         }
     }
-    $: console.log(folders);
-    $: console.log(files);
+    const refreshItems = async () => {
+        const reference = ref(storage, path === 'root' ? '/' : path);
+        const response = await listAll(reference);
+
+        folders = [];
+        files = [];
+        response.prefixes.forEach((folderRef) => {
+            folders = [
+                ...folders,
+                folderRef
+            ]
+        });
+        response.items.forEach((itemRef) => {
+            if (itemRef.name !== '.ghostfile') {
+                files = [
+                    ...files,
+                    itemRef
+                ]
+            }
+        });
+    }
 </script>
 
-<Row class="justify-content-end align-items-center bg-dark">
-    <Col class="text-white">
-        <h4 class="my-3">
-            {path}
-        </h4>
-    </Col>
-    <Col xs="auto">
-        <Button on:click={newFolder} color="primary" outline class="border-0 my-2">
-            <Icon name="folder-plus" class="h3"/>
-        </Button>
-        <Button on:click={newFile} color="primary" outline class="border-0 my-2">
-            <Icon name="file-earmark-plus" class="h3"/>
-        </Button>
-    </Col>
-    <Col xs="auto">
-        <Button href="/dashboard" color="warning" outline class="border-0 m-2">
-            <Icon name="arrow-left" class="h4"/>
-        </Button>
-    </Col>
-</Row>
-<Row class="pt-3">
-    <FoldersList items={folders}/>
-    <FilesList items={files}/>
-</Row>
+<div class="h-100 d-flex flex-column">
+    <Row class="justify-content-end align-items-center bg-dark">
+        <Col class="text-white">
+            <h4 class="my-3">
+                {path}
+            </h4>
+        </Col>
+        <Col xs="auto">
+            <Button on:click={newFolder} color="primary" outline class="border-0 my-2">
+                <Icon name="folder-plus" class="h3"/>
+            </Button>
+            <Button on:click={newFile} color="primary" outline class="border-0 my-2">
+                <Icon name="file-earmark-plus" class="h3"/>
+            </Button>
+        </Col>
+        <Col xs="auto">
+            <Button href="/dashboard" color="warning" outline class="border-0 m-2">
+                <Icon name="arrow-left" class="h4"/>
+            </Button>
+        </Col>
+    </Row>
+    <Row class="flex-grow-1 pt-3">
+        {#if folders.length === 0 && files.length === 0}
+            <Col xs="12" class="d-flex justify-content-center align-items-center text-center">
+                <h1 class="text-muted">
+                    Zložka je prázdna
+                </h1>
+            </Col>
+        {/if}
+        <Col>
+            <Row>
+                <FoldersList items={folders}/>
+                <FilesList items={files}/>
+            </Row>
+        </Col>
+    </Row>
+</div>

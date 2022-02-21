@@ -8,8 +8,10 @@
     } from "sveltestrap";
 
     export let value;
-    const name = value.name;
-    const path = value.fullPath;
+
+    $: name = value.name;
+    $: path = value.fullPath.replaceAll('/', '|');
+    $: console.log(path)
 </script>
 
 <Col xs="12" sm="6" md="4" lg="3" xl="2" class="h-auto">
