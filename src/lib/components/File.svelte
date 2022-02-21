@@ -8,7 +8,7 @@
         CardBody,
         CardFooter,
         Icon,
-        ListGroupItem, Offcanvas
+        ListGroupItem
     } from "sveltestrap";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
 
@@ -16,13 +16,9 @@
     const dispatch = createEventDispatcher();
     let name;
     let contextMenuOpener: boolean;
-    let showDetails = false;
 
     const openContextMenu = (event) => {
         contextMenuOpener = event;
-    }
-    const toggleDetails = () => {
-        showDetails = !showDetails;
     }
     const deleteFile = async () => {
         await deleteObject(value);
@@ -55,7 +51,7 @@
 </ContextMenu>
 
 <Col xs="12" sm="6" md="4" lg="3" xl="2" class="h-auto mb-4">
-    <div on:click={toggleDetails} on:contextmenu|preventDefault|stopPropagation={openContextMenu} class="w-100 h-100">
+    <div on:contextmenu|preventDefault|stopPropagation={openContextMenu} class="w-100 h-100">
         <Card class="w-100 h-100">
             <CardBody class="d-flex justify-content-center">
                 <Icon name="file-earmark" class="display-3"/>
@@ -68,7 +64,3 @@
         </Card>
     </div>
 </Col>
-
-<Offcanvas isOpen={showDetails} placement="end" header={name}>
-
-</Offcanvas>
