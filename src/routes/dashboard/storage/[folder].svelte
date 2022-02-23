@@ -87,21 +87,33 @@
             })
         }
     }
+    const uploadFile = async (file) => {
+        const uploadRef = ref(reference, file.name);
+        await uploadBytes(uploadRef, file);
+    }
     const newFile = async () => {
-        const { value: file } = await Sweetalert.fire({
+        const { value: files } = await Sweetalert.fire({
             title: 'Nahrať súbor',
             input: 'file',
             inputAttributes: {
-                'aria-label': 'Súbor'
+                'aria-label': 'Súbor',
+                'multiple': 'true'
             }
         })
 
-        if (file) {
-            const uploadRef = ref(reference, file.name);
-            await uploadBytes(uploadRef, file);
+        if (files.length > 0) {
+            console.log(files)
+            let uploads = [];
+            for (const file of files) {
+                uploads = [
+                    ...uploads,
+                    uploadFile(file)
+                ]
+            }
+            await Promise.all(uploads);
             await refreshItems();
             await Toast.fire({
-                title: 'Súbor úspešne nahraný',
+                title: `Súbor${files.length === 1 ? '' : 'y'} úspešne nahran${files.length === 1 ? 'ý' : 'é'}`,
                 icon: 'success'
             })
         }
