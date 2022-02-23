@@ -39,7 +39,7 @@
 </script>
 <script lang="ts">
     import Sweetalert from "sweetalert2";
-    import { uploadString, uploadBytes } from 'firebase/storage';
+    import {uploadString, uploadBytes, deleteObject} from 'firebase/storage';
     import { goto } from "$app/navigation";
     import { Toast } from "$lib/utils/alert";
     import {
@@ -80,11 +80,11 @@
             const directory = ref(reference, folderName)
             const ghostFile = ref(directory, '.ghostfile')
             await uploadString(ghostFile, '')
+            await refreshItems();
             await Toast.fire({
                 title: 'Zložka úspešne vytvorená',
                 icon: 'success'
             })
-            await refreshItems();
         }
     }
     const newFile = async () => {
@@ -105,6 +105,16 @@
                 icon: 'success'
             })
         }
+    }
+    const deleteThisFolder = async () => {
+        const ghostfileRef = ref(reference, '.ghostfile');
+        await deleteObject(ghostfileRef);
+        await goBack();
+        await Toast.fire({
+            title: 'Zložka úspešne vymazaná',
+            icon: 'success',
+            timer: 750
+        });
     }
     const refreshItems = async () => {
         const reference = ref(storage, path === 'root' ? '/' : path);
@@ -177,9 +187,26 @@
     <Row class="flex-grow-1 pt-3">
         {#if folders.length === 0 && files.length === 0}
             <Col xs="12" class="d-flex justify-content-center align-items-center text-center">
-                <h1 class="text-muted">
-                    Zložka je prázdna
-                </h1>
+                <Row>
+                    <Col>
+                        <Row>
+                            <Col>
+                                <h1 class="text-muted">
+                                    Zložka je prázdna
+                                </h1>
+                            </Col>
+                        </Row>
+                        {#if path !== 'root'}
+                            <Row>
+                                <Col>
+                                    <Button on:click={deleteThisFolder} color="danger" outline class="border-0 p-0">
+                                        <Icon name="trash" class="display-4"/>
+                                    </Button>
+                                </Col>
+                            </Row>
+                        {/if}
+                    </Col>
+                </Row>
             </Col>
         {/if}
         <Col>
