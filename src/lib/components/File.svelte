@@ -14,8 +14,9 @@
 
     export let value;
     const dispatch = createEventDispatcher();
-    let name;
+    let name: string;
     let contextMenuOpener: boolean;
+    let url: string;
 
     const openContextMenu = (event) => {
         contextMenuOpener = event;
@@ -29,7 +30,6 @@
         })
     }
     const copyLink = async () => {
-        const url = await getDownloadURL(value);
         await navigator.clipboard.writeText(url);
         await Toast.fire({
             title: 'Link skopírovaný',
@@ -37,7 +37,11 @@
             timer: 750
         })
     }
+    const getUrl = async (reference) => {
+        url = await getDownloadURL(reference);
+    }
 
+    $: getUrl(value);
     $: name = value.name;
 </script>
 
@@ -51,7 +55,8 @@
 </ContextMenu>
 
 <Col xs="12" sm="6" md="4" lg="3" xl="2" class="h-auto mb-4">
-    <div on:contextmenu|preventDefault|stopPropagation={openContextMenu} class="w-100 h-100">
+    <a href={url} target="_blank" on:contextmenu|preventDefault|stopPropagation={openContextMenu}
+       class="w-100 h-100 text-decoration-none text-body">
         <Card class="w-100 h-100">
             <CardBody class="d-flex justify-content-center">
                 <Icon name="file-earmark" class="display-3"/>
@@ -62,5 +67,5 @@
                 </p>
             </CardFooter>
         </Card>
-    </div>
+    </a>
 </Col>
