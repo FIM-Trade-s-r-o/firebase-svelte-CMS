@@ -26,7 +26,9 @@
 <div class="h-100 d-flex flex-column">
     <Row class="justify-content-between align-items-center bg-dark">
         <Col xs="auto" class="text-white">
-            {$user?.displayName || ""}
+	        <h4 class="my-3">
+		        {$user?.displayName || ""}
+	        </h4>
         </Col>
         <Col xs="auto">
             <Button on:click={logOut} outline color="warning" class="border-0 m-2">
