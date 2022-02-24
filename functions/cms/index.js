@@ -12323,7 +12323,7 @@ var require_minimal = __commonJS({
     util.isInteger = Number.isInteger || function isInteger2(value) {
       return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
     };
-    util.isString = function isString(value) {
+    util.isString = function isString2(value) {
       return typeof value === "string" || value instanceof String;
     };
     util.isObject = function isObject3(value) {
@@ -40219,6 +40219,9 @@ function unknown() {
   const message = "An unknown error occurred, please check the error payload for server response.";
   return new StorageError("unknown", message);
 }
+function objectNotFound(path) {
+  return new StorageError("object-not-found", "Object '" + path + "' does not exist.");
+}
 function quotaExceeded(bucket) {
   return new StorageError("quota-exceeded", "Quota for bucket '" + bucket + "' exceeded, please view quota on https://firebase.google.com/pricing/.");
 }
@@ -40246,6 +40249,9 @@ function invalidDefaultBucket(bucket) {
 }
 function noDefaultBucket() {
   return new StorageError("no-default-bucket", "No default bucket found. Did you set the '" + CONFIG_STORAGE_BUCKET_KEY + "' property when initializing the app?");
+}
+function noDownloadURL() {
+  return new StorageError("no-download-url", "The given file does not have any download URLs.");
 }
 function invalidArgument(message) {
   return new StorageError("invalid-argument", message);
@@ -40449,6 +40455,9 @@ function isJustDef(p2) {
 }
 function isNonArrayObject(p2) {
   return typeof p2 === "object" && !Array.isArray(p2);
+}
+function isString(p2) {
+  return typeof p2 === "string" || p2 instanceof String;
 }
 function validateNumber(argument, minValue, maxValue, value) {
   if (value < minValue) {
@@ -40680,6 +40689,117 @@ function lastComponent(path) {
     return path.slice(index2 + 1);
   }
 }
+function noXform_(metadata, value) {
+  return value;
+}
+var Mapping = class {
+  constructor(server, local, writable3, xform) {
+    this.server = server;
+    this.local = local || server;
+    this.writable = !!writable3;
+    this.xform = xform || noXform_;
+  }
+};
+var mappings_ = null;
+function xformPath(fullPath) {
+  if (!isString(fullPath) || fullPath.length < 2) {
+    return fullPath;
+  } else {
+    return lastComponent(fullPath);
+  }
+}
+function getMappings() {
+  if (mappings_) {
+    return mappings_;
+  }
+  const mappings = [];
+  mappings.push(new Mapping("bucket"));
+  mappings.push(new Mapping("generation"));
+  mappings.push(new Mapping("metageneration"));
+  mappings.push(new Mapping("name", "fullPath", true));
+  function mappingsXformPath(_metadata, fullPath) {
+    return xformPath(fullPath);
+  }
+  const nameMapping = new Mapping("name");
+  nameMapping.xform = mappingsXformPath;
+  mappings.push(nameMapping);
+  function xformSize(_metadata, size) {
+    if (size !== void 0) {
+      return Number(size);
+    } else {
+      return size;
+    }
+  }
+  const sizeMapping = new Mapping("size");
+  sizeMapping.xform = xformSize;
+  mappings.push(sizeMapping);
+  mappings.push(new Mapping("timeCreated"));
+  mappings.push(new Mapping("updated"));
+  mappings.push(new Mapping("md5Hash", null, true));
+  mappings.push(new Mapping("cacheControl", null, true));
+  mappings.push(new Mapping("contentDisposition", null, true));
+  mappings.push(new Mapping("contentEncoding", null, true));
+  mappings.push(new Mapping("contentLanguage", null, true));
+  mappings.push(new Mapping("contentType", null, true));
+  mappings.push(new Mapping("metadata", "customMetadata", true));
+  mappings_ = mappings;
+  return mappings_;
+}
+function addRef(metadata, service) {
+  function generateRef() {
+    const bucket = metadata["bucket"];
+    const path = metadata["fullPath"];
+    const loc = new Location(bucket, path);
+    return service._makeStorageReference(loc);
+  }
+  Object.defineProperty(metadata, "ref", { get: generateRef });
+}
+function fromResource(service, resource, mappings) {
+  const metadata = {};
+  metadata["type"] = "file";
+  const len = mappings.length;
+  for (let i2 = 0; i2 < len; i2++) {
+    const mapping = mappings[i2];
+    metadata[mapping.local] = mapping.xform(metadata, resource[mapping.server]);
+  }
+  addRef(metadata, service);
+  return metadata;
+}
+function fromResourceString(service, resourceString, mappings) {
+  const obj = jsonObjectOrNull(resourceString);
+  if (obj === null) {
+    return null;
+  }
+  const resource = obj;
+  return fromResource(service, resource, mappings);
+}
+function downloadUrlFromResourceString(metadata, resourceString, host, protocol) {
+  const obj = jsonObjectOrNull(resourceString);
+  if (obj === null) {
+    return null;
+  }
+  if (!isString(obj["downloadTokens"])) {
+    return null;
+  }
+  const tokens = obj["downloadTokens"];
+  if (tokens.length === 0) {
+    return null;
+  }
+  const encode = encodeURIComponent;
+  const tokensList = tokens.split(",");
+  const urls = tokensList.map((token) => {
+    const bucket = metadata["bucket"];
+    const path = metadata["fullPath"];
+    const urlPart = "/b/" + encode(bucket) + "/o/" + encode(path);
+    const base2 = makeUrl(urlPart, host, protocol);
+    const queryString = makeQueryString({
+      alt: "media",
+      token
+    });
+    return base2 + queryString;
+  });
+  return urls[0];
+}
 var PREFIXES_KEY = "prefixes";
 var ITEMS_KEY = "items";
 function fromBackendResponse(service, bucket, resource) {
@@ -40739,6 +40859,14 @@ function listHandler(service, bucket) {
   }
   return handler;
 }
+function downloadUrlHandler(service, mappings) {
+  function handler(xhr, text) {
+    const metadata = fromResourceString(service, text, mappings);
+    handlerCheck(metadata !== null);
+    return downloadUrlFromResourceString(metadata, text, service.host, service._protocol);
+  }
+  return handler;
+}
 function sharedErrorHandler(location) {
   function errorHandler(xhr, err) {
     let newErr;
@@ -40758,6 +40886,18 @@ function sharedErrorHandler(location) {
           newErr = err;
         }
       }
+    }
+    newErr.serverResponse = err.serverResponse;
+    return newErr;
+  }
+  return errorHandler;
+}
+function objectErrorHandler(location) {
+  const shared = sharedErrorHandler(location);
+  function errorHandler(xhr, err) {
+    let newErr = shared(xhr, err);
+    if (xhr.getStatus() === 404) {
+      newErr = objectNotFound(location.path);
     }
     newErr.serverResponse = err.serverResponse;
     return newErr;
@@ -40787,6 +40927,15 @@ function list$2(service, location, delimiter, pageToken, maxResults) {
   const requestInfo = new RequestInfo(url, method, listHandler(service, location.bucket), timeout);
   requestInfo.urlParams = urlParams;
   requestInfo.errorHandler = sharedErrorHandler(location);
+  return requestInfo;
+}
+function getDownloadUrl(service, location, mappings) {
+  const urlPart = location.fullServerUrl();
+  const url = makeUrl(urlPart, service.host, service._protocol);
+  const method = "GET";
+  const timeout = service.maxOperationRetryTime;
+  const requestInfo = new RequestInfo(url, method, downloadUrlHandler(service, mappings), timeout);
+  requestInfo.errorHandler = objectErrorHandler(location);
   return requestInfo;
 }
 var RESUMABLE_UPLOAD_CHUNK_SIZE = 256 * 1024;
@@ -40930,6 +41079,16 @@ function list$1(ref2, options2) {
   const op = options2 || {};
   const requestInfo = list$2(ref2.storage, ref2._location, "/", op.pageToken, op.maxResults);
   return ref2.storage.makeRequestWithTokens(requestInfo, newTextConnection);
+}
+function getDownloadURL$1(ref2) {
+  ref2._throwIfRoot("getDownloadURL");
+  const requestInfo = getDownloadUrl(ref2.storage, ref2._location, getMappings());
+  return ref2.storage.makeRequestWithTokens(requestInfo, newTextConnection).then((url) => {
+    if (url === null) {
+      throw noDownloadURL();
+    }
+    return url;
+  });
 }
 function _getChild$1(ref2, childPath) {
   const newPath = child(ref2._location.path, childPath);
@@ -41082,6 +41241,10 @@ var STORAGE_TYPE = "storage";
 function listAll(ref2) {
   ref2 = getModularInstance(ref2);
   return listAll$1(ref2);
+}
+function getDownloadURL(ref2) {
+  ref2 = getModularInstance(ref2);
+  return getDownloadURL$1(ref2);
 }
 function ref(serviceOrRef, pathOrUrl) {
   serviceOrRef = getModularInstance(serviceOrRef);
@@ -41434,7 +41597,7 @@ var user_hooks = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   [Symbol.toStringTag]: "Module"
 });
-var template = ({ head, body }) => '<!DOCTYPE html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<meta name="description" content="" />\n		<link rel="icon" href="/favicon.png" />\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\n		' + head + '\n	</head>\n	<body>\n		<div id="svelte">' + body + "</div>\n	</body>\n</html>\n";
+var template = ({ head, body }) => '<!DOCTYPE html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<meta name="description" content="" />\n		<link rel="icon" href="/favicon.png" />\n		<title>\n			CMS\n		</title>\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\n		' + head + '\n	</head>\n	<body>\n		<div id="svelte">' + body + "</div>\n	</body>\n</html>\n";
 var options = null;
 var default_settings = { paths: { "base": "", "assets": "" } };
 function init(settings = default_settings) {
@@ -41445,9 +41608,9 @@ function init(settings = default_settings) {
     amp: false,
     dev: false,
     entry: {
-      file: assets + "/_app/start-5441e801.js",
+      file: assets + "/_app/start-0d47ccb1.js",
       css: [assets + "/_app/assets/start-61d1577b.css", assets + "/_app/assets/vendor-28d9e71a.css"],
-      js: [assets + "/_app/start-5441e801.js", assets + "/_app/chunks/vendor-fb8270d1.js", assets + "/_app/chunks/preload-helper-ec9aa979.js", assets + "/_app/chunks/singletons-12a22614.js"]
+      js: [assets + "/_app/start-0d47ccb1.js", assets + "/_app/chunks/vendor-affad23e.js", assets + "/_app/chunks/preload-helper-ec9aa979.js", assets + "/_app/chunks/singletons-12a22614.js"]
     },
     fetched: void 0,
     floc: false,
@@ -41540,7 +41703,7 @@ var module_lookup = {
     return _folder_;
   })
 };
-var metadata_lookup = { "src/routes/__layout.svelte": { "entry": "pages/__layout.svelte-abf3546c.js", "css": ["assets/pages/__layout.svelte-efe1f589.css", "assets/vendor-28d9e71a.css"], "js": ["pages/__layout.svelte-abf3546c.js", "chunks/vendor-fb8270d1.js", "chunks/preload-helper-ec9aa979.js", "chunks/index-a8c6280b.js"], "styles": [] }, ".svelte-kit/build/components/error.svelte": { "entry": "error.svelte-b317bc57.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["error.svelte-b317bc57.js", "chunks/vendor-fb8270d1.js"], "styles": [] }, "src/routes/index.svelte": { "entry": "pages/index.svelte-a476a8f1.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/index.svelte-a476a8f1.js", "chunks/vendor-fb8270d1.js", "chunks/index-fb678609.js", "chunks/alert-b9e5f972.js", "chunks/index-a8c6280b.js", "chunks/navigation-51f4a605.js", "chunks/singletons-12a22614.js", "chunks/errorHandling-a9fba06f.js", "chunks/env-2990e8b0.js"], "styles": [] }, "src/routes/dashboard/__layout.svelte": { "entry": "pages/dashboard/__layout.svelte-05b74d43.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/__layout.svelte-05b74d43.js", "chunks/vendor-fb8270d1.js", "chunks/index-a8c6280b.js", "chunks/env-2990e8b0.js", "chunks/navigation-51f4a605.js", "chunks/singletons-12a22614.js", "chunks/index-fb678609.js"], "styles": [] }, "src/routes/dashboard/index.svelte": { "entry": "pages/dashboard/index.svelte-338e2362.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/index.svelte-338e2362.js", "chunks/vendor-fb8270d1.js", "chunks/index-a8c6280b.js", "chunks/alert-b9e5f972.js", "chunks/errorHandling-a9fba06f.js"], "styles": [] }, "src/routes/dashboard/collections/[collection].svelte": { "entry": "pages/dashboard/collections/_collection_.svelte-c34bc234.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/collections/_collection_.svelte-c34bc234.js", "chunks/vendor-fb8270d1.js", "chunks/index-a8c6280b.js", "chunks/alert-b9e5f972.js", "chunks/index-fb678609.js"], "styles": [] }, "src/routes/dashboard/storage/[folder].svelte": { "entry": "pages/dashboard/storage/_folder_.svelte-60e0787b.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/storage/_folder_.svelte-60e0787b.js", "chunks/vendor-fb8270d1.js", "chunks/index-a8c6280b.js", "chunks/navigation-51f4a605.js", "chunks/singletons-12a22614.js", "chunks/alert-b9e5f972.js"], "styles": [] } };
+var metadata_lookup = { "src/routes/__layout.svelte": { "entry": "pages/__layout.svelte-61ae1f20.js", "css": ["assets/pages/__layout.svelte-efe1f589.css", "assets/vendor-28d9e71a.css"], "js": ["pages/__layout.svelte-61ae1f20.js", "chunks/vendor-affad23e.js", "chunks/preload-helper-ec9aa979.js", "chunks/index-e277acb4.js"], "styles": [] }, ".svelte-kit/build/components/error.svelte": { "entry": "error.svelte-db48fb93.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["error.svelte-db48fb93.js", "chunks/vendor-affad23e.js"], "styles": [] }, "src/routes/index.svelte": { "entry": "pages/index.svelte-37dd2577.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/index.svelte-37dd2577.js", "chunks/vendor-affad23e.js", "chunks/index-fb678609.js", "chunks/alert-fb10ff53.js", "chunks/index-e277acb4.js", "chunks/navigation-51f4a605.js", "chunks/singletons-12a22614.js", "chunks/errorHandling-e8e0f7cb.js", "chunks/env-2990e8b0.js"], "styles": [] }, "src/routes/dashboard/__layout.svelte": { "entry": "pages/dashboard/__layout.svelte-dbc0e657.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/__layout.svelte-dbc0e657.js", "chunks/vendor-affad23e.js", "chunks/index-e277acb4.js", "chunks/env-2990e8b0.js", "chunks/navigation-51f4a605.js", "chunks/singletons-12a22614.js", "chunks/index-fb678609.js"], "styles": [] }, "src/routes/dashboard/index.svelte": { "entry": "pages/dashboard/index.svelte-436aefed.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/index.svelte-436aefed.js", "chunks/vendor-affad23e.js", "chunks/index-e277acb4.js", "chunks/alert-fb10ff53.js", "chunks/errorHandling-e8e0f7cb.js"], "styles": [] }, "src/routes/dashboard/collections/[collection].svelte": { "entry": "pages/dashboard/collections/_collection_.svelte-def292e3.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/collections/_collection_.svelte-def292e3.js", "chunks/vendor-affad23e.js", "chunks/index-e277acb4.js", "chunks/alert-fb10ff53.js", "chunks/index-fb678609.js"], "styles": [] }, "src/routes/dashboard/storage/[folder].svelte": { "entry": "pages/dashboard/storage/_folder_.svelte-29ebd4fd.js", "css": ["assets/vendor-28d9e71a.css"], "js": ["pages/dashboard/storage/_folder_.svelte-29ebd4fd.js", "chunks/vendor-affad23e.js", "chunks/index-e277acb4.js", "chunks/navigation-51f4a605.js", "chunks/singletons-12a22614.js", "chunks/alert-fb10ff53.js"], "styles": [] } };
 async function load_component(file) {
   const { entry, css: css2, js, styles } = metadata_lookup[file];
   return {
@@ -45762,12 +45925,19 @@ var File = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   createEventDispatcher();
   let name6;
   let contextMenuOpener;
+  let url;
+  const getUrl = async (reference) => {
+    url = await getDownloadURL(reference);
+  };
   if ($$props.value === void 0 && $$bindings.value && value !== void 0)
     $$bindings.value(value);
   let $$settled;
   let $$rendered;
   do {
     $$settled = true;
+    {
+      getUrl(value);
+    }
     name6 = value.name;
     $$rendered = `${validate_component(ContextMenu, "ContextMenu").$$render($$result, { opener: contextMenuOpener }, {
       opener: ($$value) => {
@@ -45800,7 +45970,7 @@ ${validate_component(Col, "Col").$$render($$result, {
       class: "h-auto mb-4"
     }, {}, {
       default: () => {
-        return `<div class="${"w-100 h-100"}">${validate_component(Card, "Card").$$render($$result, { class: "w-100 h-100" }, {}, {
+        return `<a${add_attribute("href", url, 0)} target="${"_blank"}" class="${"w-100 h-100 text-decoration-none text-body"}">${validate_component(Card, "Card").$$render($$result, { class: "w-100 h-100" }, {}, {
           default: () => {
             return `${validate_component(CardBody, "CardBody").$$render($$result, { class: "d-flex justify-content-center" }, {}, {
               default: () => {
@@ -45813,7 +45983,7 @@ ${validate_component(Col, "Col").$$render($$result, {
               }
             })}`;
           }
-        })}</div>`;
+        })}</a>`;
       }
     })}`;
   } while (!$$settled);
@@ -45933,8 +46103,41 @@ var U5Bfolderu5D = create_ssr_component(($$result, $$props, $$bindings, slots) =
         class: "d-flex justify-content-center align-items-center text-center"
       }, {}, {
         default: () => {
-          return `<h1 class="${"text-muted"}">Zlo\u017Eka je pr\xE1zdna
-                </h1>`;
+          return `${validate_component(Row, "Row").$$render($$result, {}, {}, {
+            default: () => {
+              return `${validate_component(Col, "Col").$$render($$result, {}, {}, {
+                default: () => {
+                  return `${validate_component(Row, "Row").$$render($$result, {}, {}, {
+                    default: () => {
+                      return `${validate_component(Col, "Col").$$render($$result, {}, {}, {
+                        default: () => {
+                          return `<h1 class="${"text-muted"}">Zlo\u017Eka je pr\xE1zdna
+                                </h1>`;
+                        }
+                      })}`;
+                    }
+                  })}
+                        ${path !== "root" ? `${validate_component(Row, "Row").$$render($$result, {}, {}, {
+                    default: () => {
+                      return `${validate_component(Col, "Col").$$render($$result, {}, {}, {
+                        default: () => {
+                          return `${validate_component(Button, "Button").$$render($$result, {
+                            color: "danger",
+                            outline: true,
+                            class: "border-0 p-0"
+                          }, {}, {
+                            default: () => {
+                              return `${validate_component(Icon, "Icon").$$render($$result, { name: "trash", class: "display-4" }, {}, {})}`;
+                            }
+                          })}`;
+                        }
+                      })}`;
+                    }
+                  })}` : ``}`;
+                }
+              })}`;
+            }
+          })}`;
         }
       })}` : ``}
         ${validate_component(Col, "Col").$$render($$result, {}, {}, {
