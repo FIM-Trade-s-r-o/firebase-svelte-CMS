@@ -7,7 +7,7 @@
 	} from 'sveltestrap';
 </script>
 
-<Row>
+<Row class="vh-100 position-sticky align-items-center" style="left: 0; top: 0">
 	<Col>
 		<h4 class="mb-5">
 			Upravitelný obsah
