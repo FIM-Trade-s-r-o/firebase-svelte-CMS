@@ -1,42 +1,21 @@
 <script>
     import {
-        Button,
-        Col, Icon,
-        ListGroup, ListGroupItem,
+        Col,
         Row
     } from "sveltestrap";
     import { user } from "$lib/firebase/index";
     import { browser } from "$app/env";
     import { goto } from "$app/navigation";
-    import {_} from "svelte-i18n";
-    import config from "$lib/config";
+    import Sidebar from '$lib/components/Sidebar.svelte';
 
     $: if (!$user && browser) {
         goto('/')
     }
-    const collections = config.collections;
-
 </script>
 
 <Row class="h-100">
     <Col xs="12" md="3" xl="2" class="d-flex flex-column justify-content-center align-items-center bg-light">
-        <h4 class="mb-5">
-            Zbierky
-            <!--{$_('page.dashboard.collections')}-->
-        </h4>
-        <ListGroup flush class="w-100">
-            {#each collections as { name }}
-                <ListGroupItem href="/dashboard/collections/{name}" class="border-1 text-center mb-1">
-                    {name}
-                </ListGroupItem>
-            {:else}
-                {$_('page.dashboard.noCollections')}
-            {/each}
-        </ListGroup>
-        <hr class="my-2 w-100">
-        <Button href="/dashboard/storage/root" color="dark" outline class="w-100 rounded-0">
-            <Icon name="folder2"/> Disk
-        </Button>
+	    <Sidebar />
     </Col>
     <Col xs="12" md="9" xl="10">
         <slot/>
