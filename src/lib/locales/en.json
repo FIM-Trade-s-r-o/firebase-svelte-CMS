@@ -1,8 +1,39 @@
 {
 	"page": {
-		"main": {
-			"title": "Testing page",
-			"text": "test"
+		"login": {
+			"title": "Log in"
+		},
+		"dashboard": {
+			"collections": "Collections",
+			"noCollections": "No customizable content"
+		}
+	},
+	"components": {
+		"auth": {
+			"userNotFound": {
+				"text": "",
+				"title": ""
+			},
+			"wrongPassword": {
+				"text": "",
+				"title": ""
+			},
+			"emailAlreadyInUse": {
+				"text": "",
+				"title": ""
+			},
+			"invalidEmail": {
+				"text": "",
+				"title": ""
+			},
+			"accountDisabled": {
+				"text": "",
+				"title": ""
+			},
+			"other": {
+				"text": "",
+				"title": ""
+			}
 		}
 	}
 }
