@@ -1,0 +1,14 @@
+import Config from './definitions';
+// Add your schema imports here
+import { importedSchmea } from "$lib/schemas/schemas";
+
+// CMS config
+const index = new Config({
+    adminAccounts: ['account@service.top'],
+    collections: [{
+        name: 'collectionName',
+        schema: importedSchema
+    }]
+})
+
+export default index;

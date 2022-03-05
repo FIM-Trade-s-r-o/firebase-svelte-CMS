@@ -1,13 +1,13 @@
 import Config from './definitions';
 // Add your schema imports here
-import { sectionSchema } from "$lib/schemas/schemas";
+import { exampleSchema } from "$lib/schemas/schemas";
 
 // CMS config
 const index = new Config({
-    adminAccounts: ['filip.holcik.official@gmail.com', 'farbysupercolor@gmail.com'],
+    adminAccounts: [],
     collections: [{
-        name: 'sections',
-        schema: sectionSchema
+        name: '',
+        schema: exampleSchema // Make and load your schema
     }]
 })
 

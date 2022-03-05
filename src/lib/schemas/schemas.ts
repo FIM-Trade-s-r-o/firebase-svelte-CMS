@@ -1,6 +1,6 @@
-import Schema from "$lib/schemas/lib";
+import Schema from "$lib/schemas/lib"; // Load schema constructor
 
-const sectionSchema = new Schema({
+const exampleSchema = new Schema({  // model your data
     title: String,
     text: String,
     image: String,
@@ -8,5 +8,5 @@ const sectionSchema = new Schema({
 })
 
 export {
-    sectionSchema
+    exampleSchema // export schema for later use in config
 };
