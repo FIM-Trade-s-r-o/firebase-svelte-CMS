@@ -37,14 +37,12 @@ class Schema {
         this.forEach(({ property: requiredProperty , type: requiredType })=>{
             console.log(potentialInstance, requiredProperty, hasOwnProperty(potentialInstance, requiredProperty))
             if (hasOwnProperty(potentialInstance, requiredProperty)) {
-                console.log('s')
                 switch (requiredType) {
                     case Boolean:
                     case Number:
                     case String:
                     case Symbol:
                     case BigInt: {
-                        console.log('f')
                         if (typeof potentialInstance[requiredProperty] !== typeof requiredType()) return invalidate();
                         break;
                     }

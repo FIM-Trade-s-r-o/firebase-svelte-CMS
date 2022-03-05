@@ -1,0 +1,41 @@
+/* comfortaa-bold */
+@font-face {
+	font-family: Comfortaa;
+	font-style: normal;
+	font-weight: 700;
+	src: local("Comfortaa Bold"), local("Comfortaa-Bold"), url(comfortaa-bold.woff2) format("woff2");
+	font-display: auto;
+}
+/* comfortaa-light */
+@font-face {
+	font-family: Comfortaa;
+	font-style: normal;
+	font-weight: 300;
+	src: local("Comfortaa Light"), local("Comfortaa-Light"), url(comfortaa-light.woff2) format("woff2");
+	font-display: auto;
+}
+/* comfortaa-medium */
+@font-face {
+	font-family: Comfortaa;
+	font-style: normal;
+	font-weight: 500;
+	src: local("Comfortaa Medium"), local("Comfortaa-Medium"), url(comfortaa-medium.woff2) format("woff2");
+	font-display: auto;
+}
+/* comfortaa-regular */
+@font-face {
+	font-family: Comfortaa;
+	font-style: normal;
+	font-weight: 400;
+	src: local("Comfortaa Regular"), local("Comfortaa-Regular"), url(comfortaa-regular.woff2) format("woff2");
+	font-display: auto;
+}
+/* comfortaa-semibold */
+@font-face {
+	font-family: Comfortaa;
+	font-style: normal;
+	font-weight: 400;
+	src: local("Comfortaa SemiBold"), local("Comfortaa-SemiBold"), url(comfortaa-semibold.woff2) format("woff2");
+	font-display: auto;
+}
+
