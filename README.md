@@ -11,7 +11,7 @@ altering configuration files.
 
 ### List of configuration files
 
-- `/src/lib/config/index` will point to `/../CMS-config/general`
+- `/src/lib/config/index.ts` will point to `/../CMS-config/general.ts`
 - `/src/lib/firebase/config.json` will point to `/../CMS-config/firebase.json`
 - `/src/lib/schemas/schemas.ts` will point to `/../CMS-config/schemas.ts`
 
