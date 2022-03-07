@@ -5,11 +5,13 @@
     import type Schema from "$lib/schemas/lib";
     import { firestore } from "$lib/firebase";
     import { Toast } from "$lib/utils/alert";
+    import {createEventDispatcher} from "svelte";
 
     export let collectionName: string;
     export let schema: Schema;
     export let isOpen = false;
     const collectionRef = collection(firestore, collectionName);
+    const dispatch = createEventDispatcher();
     let data = {};
 
     const toggle = () => {
@@ -20,6 +22,7 @@
             if (schema.validate(data)) {
                 const docRef = await addDoc(collectionRef, data);
                 isOpen = false;
+                dispatch('addedDocument');
                 await Toast.fire({
                     icon: "success",
                     title: "Dokument úspešne vytvorený",

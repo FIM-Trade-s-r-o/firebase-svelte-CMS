@@ -49,6 +49,9 @@
     const openNewDocumentModal = () => {
       isNewDocumentModalOpen = true;
     }
+    const reload = () => {
+        collectionData = getCollection(collectionName);
+    };
 
 </script>
 
@@ -80,11 +83,11 @@
         {:then collection}
             <CollectionHeader {schema}/>
             {#each collection as document}
-                <Document collection={collectionName} {schema} data={document}/>
+                <Document collection={collectionName} {schema} data={document} on:deletedDocument={reload}/>
             {:else}
                 <EmptyCollection />
             {/each}
-            <NewDocumentModal {collectionName} {schema} bind:isOpen={isNewDocumentModalOpen}/>
+            <NewDocumentModal {collectionName} {schema} bind:isOpen={isNewDocumentModalOpen} on:addedDocument={reload}/>
         {/await}
     </Col>
 </Row>

@@ -5,11 +5,13 @@
     import PropertyInput from "$lib/components/PropertyInput.svelte";
     import {firestore} from "$lib/firebase";
     import {Toast} from "$lib/utils/alert";
+    import { createEventDispatcher } from "svelte";
 
     export let collection: string;
     export let schema: Schema;
     export let data: object;
     const documentRef = doc(firestore, collection, data.id);
+    const dispatch = createEventDispatcher();
 
     let isModalOpen = false;
     const toggleModal = () => {
@@ -33,6 +35,7 @@
     const deleteDocument = async () => {
         await deleteDoc(documentRef);
         toggleModal();
+        dispatch('deletedDocument');
         await Toast.fire({
             title: 'Dokument vymazaný',
             icon: 'success'
