@@ -17,13 +17,20 @@
     }
     const submit = async () => {
         try {
-            const docRef = await addDoc(collectionRef, data);
-            isOpen = false;
-            await Toast.fire({
-                icon: "success",
-                title: "Dokument úspešne vytvorený",
-                text: `ID dokumentu: ${docRef.id}`
-            })
+            if (schema.validate(data)) {
+                const docRef = await addDoc(collectionRef, data);
+                isOpen = false;
+                await Toast.fire({
+                    icon: "success",
+                    title: "Dokument úspešne vytvorený",
+                    text: `ID dokumentu: ${docRef.id}`
+                })
+            } else {
+                await Toast.fire({
+                    icon: "error",
+                    title: "Dáta dokumentu nezdpovedajú schéme"
+                })
+            }
         } catch (error) {
             await Toast.fire({
                 icon: "error",

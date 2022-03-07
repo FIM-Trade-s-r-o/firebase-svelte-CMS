@@ -5,9 +5,9 @@
     export let schema;
     export let property;
 
-    const getInputType = (): string => {
+    const getInputBehaviour = (): object => {
         let type: string;
-        switch (schema.dataModel[property]) {
+        switch (schema.dataModel[property].type) {
             case Boolean: {
                 type = 'checkbox';
                 break;
@@ -21,12 +21,19 @@
                 type = 'textarea';
             }
         }
-        return type;
+        return {
+            type,
+            isRequired: schema.dataModel[property].required
+        };
     }
 
-    const type = getInputType();
+    const { type, isRequired } = getInputBehaviour();
+    // Setting default value
+    if (type === 'number') {
+        value = value || 0;
+    }
 </script>
 
 <FormGroup>
-    <Input {type} bind:value/>
+    <Input {type} bind:value required={isRequired} placeholder={isRequired ? 'povinné' : ''}/>
 </FormGroup>

@@ -8,6 +8,14 @@ function hasOwnProperty<T, K extends PropertyKey>(
 class Schema {
     readonly #dataModel: object = {};
     constructor(model) {
+        for (const property in model) {
+            if (typeof model[property] !== 'object') {
+                model[property] = {
+                    type: model[property],
+                    required: false
+                }
+            }
+        }
         this.#dataModel = model;
     }
     get dataModel() {
@@ -29,30 +37,40 @@ class Schema {
         }
     }
     validate(potentialInstance: object): boolean {
-        let isValid = true;
-        const invalidate = (): true => {
-            isValid = false;
-            return true; // this will end forEach
-        }
-        this.forEach(({ property: requiredProperty , type: requiredType })=>{
-            console.log(potentialInstance, requiredProperty, hasOwnProperty(potentialInstance, requiredProperty))
-            if (hasOwnProperty(potentialInstance, requiredProperty)) {
+        for (const property in this.#dataModel) {
+            const { type: requiredType, required } = this.#dataModel[property];
+
+            if (hasOwnProperty(potentialInstance, property)) {
+                if (required && !potentialInstance[property]) {
+                    console.warn('Required property contains no information');
+                    return false;
+                }
                 switch (requiredType) {
                     case Boolean:
                     case Number:
                     case String:
                     case Symbol:
                     case BigInt: {
-                        if (typeof potentialInstance[requiredProperty] !== typeof requiredType()) return invalidate();
+                        const expectedType =  typeof requiredType();
+                        const actualType = typeof potentialInstance[property];
+                        if (actualType !== expectedType) {
+                            console.warn(`Type checking has failed at property: ${property},
+                            expected type: ${expectedType},
+                            actual type: ${actualType}`);
+                            return false;
+                        }
                         break;
                     }
                     default: {
-                       console.warn('Non-primitive property, omitting validation')
+                        console.warn('Non-primitive property, omitting type validation')
                     }
                 }
-            } else return invalidate();
-        })
-        return isValid;
+            } else if (required) {
+                console.warn('Missing required property');
+                return false;
+            }
+        }
+        return true;
     }
 }
 

@@ -16,12 +16,19 @@
         isModalOpen = !isModalOpen;
     }
     const updateData = async () => {
-        await updateDoc(documentRef, data);
-        toggleModal();
-        await Toast.fire({
-            title: 'Dokument upravený',
-            icon: 'success'
-        });
+        if (schema.validate(data)) {
+            await updateDoc(documentRef, data);
+            toggleModal();
+            await Toast.fire({
+                title: 'Dokument upravený',
+                icon: 'success'
+            });
+        } else {
+            await Toast.fire({
+                icon: "error",
+                title: "Dáta dokumentu nezdpovedajú schéme"
+            })
+        }
     }
     const deleteDocument = async () => {
         await deleteDoc(documentRef);
