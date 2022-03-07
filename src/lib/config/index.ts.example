@@ -1,13 +1,19 @@
 import Config from './definitions';
 // Add your schema imports here
-import { importedSchmea } from "$lib/schemas/schemas";
+// @ts-ignore
+import { importedSchma } from "$lib/schemas/schemas";
 
 // CMS config
 const index = new Config({
     adminAccounts: ['account@service.top'],
     collections: [{
         name: 'collectionName',
-        schema: importedSchema
+        schema: importedSchma,
+        // optional
+        sortBy: {
+            property: 'age',
+            sort: 'asc'
+        }
     }]
 })
 

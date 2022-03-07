@@ -1,8 +1,14 @@
 import type Schema from "$lib/schemas/lib";
 
+interface Sorting {
+    property: string,
+    sort: 'asc' | 'desc'
+}
+
 interface Collection {
     name: string,
-    schema: Schema
+    schema: Schema,
+    sortBy?: Sorting
 }
 
 interface GlobalConfig {
@@ -26,10 +32,10 @@ class Config {
         })
         return match;
     }
-    getCollectionSchema(name: string): Schema {
+    getCollection(name: string): Collection {
         for (const collection of this.collections) {
             if (name === collection.name) {
-                return collection.schema;
+                return collection;
             }
         }
     }

@@ -1,10 +1,17 @@
 <script context="module" lang="ts">
     import { firestore } from "$lib/firebase";
-    import { collection, getDocs } from 'firebase/firestore';
+    import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+    import config from "$lib/config";
 
 	const getCollection = async (collectionName) => {
-		const docsSnap = await getDocs(collection(firestore, collectionName));
-		
+        const sorting = config.getCollection(collectionName).sortBy;
+        let docsSnap;
+        if (sorting) {
+            docsSnap = await getDocs(query(collection(firestore, collectionName), orderBy(sorting.property, sorting.sort)));
+        } else {
+            docsSnap = await getDocs(collection(firestore, collectionName));
+        }
+
 		let collectionData = [];
 		await docsSnap.forEach(document => {
 			//console.log(document)
@@ -38,13 +45,12 @@
     } from "sveltestrap";
     import Document from "$lib/components/Document.svelte";
     import EmptyCollection from "$lib/components/EmptyCollection.svelte";
-    import config from "$lib/config";
     import NewDocumentModal from "$lib/components/NewDocumentModal.svelte";
     import CollectionHeader from "$lib/components/CollectionHeader.svelte";
 
     export let collectionData: object;
     export let collectionName: string;
-    const schema = config.getCollectionSchema(collectionName);
+    const schema = config.getCollection(collectionName).schema;
     let isNewDocumentModalOpen = false;
     const openNewDocumentModal = () => {
       isNewDocumentModalOpen = true;
