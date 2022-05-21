@@ -25,8 +25,8 @@
 		})
 		return collectionData;
 	}
-    export async function load({ page }) {
-	    const collectionName = page.params.collection;
+    export async function load({ params }) {
+	    const collectionName = params.collection;
 	
 	    return {
             props: {

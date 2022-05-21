@@ -2,8 +2,8 @@
     import { ref, listAll } from "firebase/storage";
     import { storage } from "$lib/firebase";
 
-    export async function load({ page }) {
-        const path = (page.params.folder).replaceAll('|', '/');
+    export async function load({ params }) {
+        const path = (params.folder).replaceAll('|', '/');
         const reference = ref(storage, path === 'root' ? '/' : path);
 
         const response = await listAll(reference);
