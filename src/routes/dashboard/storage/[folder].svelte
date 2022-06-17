@@ -48,7 +48,7 @@
         Button,
         Icon,
         Breadcrumb,
-        BreadcrumbItem
+        BreadcrumbItem, Modal
     } from "sveltestrap";
     import FoldersList from "$lib/components/FoldersList.svelte";
     import FilesList from "$lib/components/FilesList.svelte";
@@ -57,7 +57,11 @@
     export let path;
     export let folders;
     export let files;
+    let infoVisible = false;
 
+    const toggleInfo = () => {
+        infoVisible = !infoVisible;
+    }
     const newFolder = async () => {
         // const dir = ref
         const { value: folderName } = await Sweetalert.fire({
@@ -162,6 +166,7 @@
             }
         }
     }
+    $: console.log(files.length)
 </script>
 
 <div class="h-100 d-flex flex-column">
@@ -183,6 +188,9 @@
             </Breadcrumb>
         </Col>
         <Col xs="auto">
+            <Button on:click={toggleInfo} color="primary" outline class="border-0 my-2">
+                <Icon name="info-circle" class="h3"/>
+            </Button>
             <Button on:click={newFolder} color="primary" outline class="border-0 my-2">
                 <Icon name="folder-plus" class="h3"/>
             </Button>
@@ -229,3 +237,11 @@
         </Col>
     </Row>
 </div>
+<Modal body isOpen={infoVisible} toggle={toggleInfo}>
+    <p>
+        Počet súborov: {files.length}
+    </p>
+    <p>
+        Počet adresárov: {folders.length}
+    </p>
+</Modal>
