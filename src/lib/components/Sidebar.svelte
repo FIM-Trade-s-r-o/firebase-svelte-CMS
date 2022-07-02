@@ -1,10 +1,10 @@
 <script>
 	import {
-		Row,
-		Col,
-		Button,
-		Icon, ButtonGroup
-	} from 'sveltestrap';
+	    Row,
+	    Col,
+	    Button,
+	    Icon, ButtonGroup
+	} from 'sveltestrap'
 </script>
 
 <Row class="vh-100 position-sticky align-items-center" style="left: 0; top: 0">

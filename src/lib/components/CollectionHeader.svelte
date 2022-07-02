@@ -2,10 +2,10 @@
     import {
         Row,
         Col
-    } from "sveltestrap";
-    import type Schema from "$lib/schemas/lib";
+    } from 'sveltestrap'
+    import type Schema from '$lib/schemas/lib'
 
-    export let schema: Schema;
+    export let schema: Schema
 </script>
 
 

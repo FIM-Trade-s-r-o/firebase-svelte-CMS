@@ -1,10 +1,10 @@
 // src/i18n.js
-import { register, init, getLocaleFromNavigator } from 'svelte-i18n';
+import { register, init, getLocaleFromNavigator } from 'svelte-i18n'
 
-register('en', () => import('./en.json'));
+register('en', () => import('./en.json'))
 
 init({
     fallbackLocale: 'en',
-    initialLocale: getLocaleFromNavigator(),
-});
+    initialLocale: getLocaleFromNavigator()
+})
 // starts loading 'en-US' and 'en'

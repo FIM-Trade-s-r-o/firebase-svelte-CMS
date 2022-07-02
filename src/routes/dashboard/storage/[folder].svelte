@@ -1,22 +1,22 @@
 <script lang="ts" context="module">
-    import { ref, listAll } from "firebase/storage";
-    import { storage } from "$lib/firebase";
+    import { ref, listAll } from 'firebase/storage'
+    import { storage } from '$lib/firebase'
 
-    export async function load({ params }) {
-        const path = (params.folder).replaceAll('|', '/');
-        const reference = ref(storage, path === 'root' ? '/' : path);
+    export async function load ({ params }) {
+        const path = (params.folder).replaceAll('|', '/')
+        const reference = ref(storage, path === 'root' ? '/' : path)
 
-        const response = await listAll(reference);
+        const response = await listAll(reference)
 
-        let folders = [];
-        let files = [];
+        let folders = []
+        let files = []
 
         response.prefixes.forEach((folderRef) => {
             folders = [
                 ...folders,
                 folderRef
             ]
-        });
+        })
         response.items.forEach((itemRef) => {
             console.log(itemRef.name)
             if (itemRef.name !== '.ghostfile') {
@@ -25,7 +25,7 @@
                     itemRef
                 ]
             }
-        });
+        })
 
         return {
             props: {
@@ -34,14 +34,14 @@
                 folders,
                 files
             }
-        };
+        }
     }
 </script>
 <script lang="ts">
-    import Sweetalert from "sweetalert2";
-    import {uploadString, uploadBytes, deleteObject} from 'firebase/storage';
-    import { goto } from "$app/navigation";
-    import { Toast } from "$lib/utils/alert";
+    import Sweetalert from 'sweetalert2'
+    import { uploadString, uploadBytes, deleteObject } from 'firebase/storage'
+    import { goto } from '$app/navigation'
+    import { Toast } from '$lib/utils/alert'
     import {
         Row,
         Col,
@@ -49,18 +49,18 @@
         Icon,
         Breadcrumb,
         BreadcrumbItem, Modal
-    } from "sveltestrap";
-    import FoldersList from "$lib/components/FoldersList.svelte";
-    import FilesList from "$lib/components/FilesList.svelte";
+    } from 'sveltestrap'
+    import FoldersList from '$lib/components/FoldersList.svelte'
+    import FilesList from '$lib/components/FilesList.svelte'
 
-    export let reference;
-    export let path;
-    export let folders;
-    export let files;
-    let infoVisible = false;
+    export let reference
+    export let path
+    export let folders
+    export let files
+    let infoVisible = false
 
     const toggleInfo = () => {
-        infoVisible = !infoVisible;
+        infoVisible = !infoVisible
     }
     const newFolder = async () => {
         // const dir = ref
@@ -84,7 +84,7 @@
             const directory = ref(reference, folderName)
             const ghostFile = ref(directory, '.ghostfile')
             await uploadString(ghostFile, '')
-            await refreshItems();
+            await refreshItems()
             await Toast.fire({
                 title: 'Zložka úspešne vytvorená',
                 icon: 'success'
@@ -92,8 +92,8 @@
         }
     }
     const uploadFile = async (file) => {
-        const uploadRef = ref(reference, file.name);
-        await uploadBytes(uploadRef, file);
+        const uploadRef = ref(reference, file.name)
+        await uploadBytes(uploadRef, file)
     }
     const newFile = async () => {
         const { value: files } = await Sweetalert.fire({
@@ -101,21 +101,21 @@
             input: 'file',
             inputAttributes: {
                 'aria-label': 'Súbor',
-                'multiple': 'true'
+                multiple: 'true'
             }
         })
 
         if (files.length > 0) {
             console.log(files)
-            let uploads = [];
+            let uploads = []
             for (const file of files) {
                 uploads = [
                     ...uploads,
                     uploadFile(file)
                 ]
             }
-            await Promise.all(uploads);
-            await refreshItems();
+            await Promise.all(uploads)
+            await refreshItems()
             await Toast.fire({
                 title: `Súbor${files.length === 1 ? '' : 'y'} úspešne nahran${files.length === 1 ? 'ý' : 'é'}`,
                 icon: 'success'
@@ -123,27 +123,27 @@
         }
     }
     const deleteThisFolder = async () => {
-        const ghostfileRef = ref(reference, '.ghostfile');
-        await deleteObject(ghostfileRef);
-        await goBack();
+        const ghostfileRef = ref(reference, '.ghostfile')
+        await deleteObject(ghostfileRef)
+        await goBack()
         await Toast.fire({
             title: 'Zložka úspešne vymazaná',
             icon: 'success',
             timer: 750
-        });
+        })
     }
     const refreshItems = async () => {
-        const reference = ref(storage, path === 'root' ? '/' : path);
-        const response = await listAll(reference);
+        const reference = ref(storage, path === 'root' ? '/' : path)
+        const response = await listAll(reference)
 
-        folders = [];
-        files = [];
+        folders = []
+        files = []
         response.prefixes.forEach((folderRef) => {
             folders = [
                 ...folders,
                 folderRef
             ]
-        });
+        })
         response.items.forEach((itemRef) => {
             if (itemRef.name !== '.ghostfile') {
                 files = [
@@ -151,18 +151,18 @@
                     itemRef
                 ]
             }
-        });
+        })
     }
     const goBack = () => {
         if (path === 'root') {
-            goto('/dashboard');
+            goto('/dashboard')
         } else {
             if (path.includes('/')) {
                 const newPath = path.slice(0, path.lastIndexOf('/'))
-                goto(`/dashboard/storage/${newPath.replaceAll('/','|')}`)
+                goto(`/dashboard/storage/${newPath.replaceAll('/', '|')}`)
                 console.log(newPath)
             } else {
-                goto(`/dashboard/storage/root`)
+                goto('/dashboard/storage/root')
             }
         }
     }

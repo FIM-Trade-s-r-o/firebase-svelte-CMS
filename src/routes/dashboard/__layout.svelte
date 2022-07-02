@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
     import {
         Col,
         Row
-    } from "sveltestrap";
-    import { user } from "$lib/firebase/index";
-    import { browser } from "$app/env";
-    import { goto } from "$app/navigation";
-    import Sidebar from '$lib/components/Sidebar.svelte';
+    } from 'sveltestrap'
+    import { user } from '$lib/firebase'
+    import { browser } from '$app/env'
+    import { goto } from '$app/navigation'
+    import Sidebar from '$lib/components/Sidebar.svelte'
 
     $: if (!$user && browser) {
         goto('/')

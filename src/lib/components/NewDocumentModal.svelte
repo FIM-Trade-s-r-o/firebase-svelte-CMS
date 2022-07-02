@@ -1,46 +1,46 @@
 <script lang="ts">
-    import {Button, Col, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "sveltestrap";
-    import { collection, addDoc } from "firebase/firestore";
-    import PropertyInput from "$lib/components/PropertyInput.svelte";
-    import type Schema from "$lib/schemas/lib";
-    import { firestore } from "$lib/firebase";
-    import { Toast } from "$lib/utils/alert";
-    import {createEventDispatcher} from "svelte";
+    import { Button, Col, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'sveltestrap'
+    import { collection, addDoc } from 'firebase/firestore'
+    import PropertyInput from '$lib/components/PropertyInput.svelte'
+    import type Schema from '$lib/schemas/lib'
+    import { firestore } from '$lib/firebase'
+    import { Toast } from '$lib/utils/alert'
+    import { createEventDispatcher } from 'svelte'
 
-    export let collectionName: string;
-    export let schema: Schema;
-    export let isOpen = false;
-    const collectionRef = collection(firestore, collectionName);
-    const dispatch = createEventDispatcher();
-    let data = {};
+    export let collectionName: string
+    export let schema: Schema
+    export let isOpen = false
+    const collectionRef = collection(firestore, collectionName)
+    const dispatch = createEventDispatcher()
+    const data = {}
 
     const toggle = () => {
-        isOpen = !isOpen;
+        isOpen = !isOpen
     }
     const submit = async () => {
         try {
             if (schema.validate(data)) {
-                const docRef = await addDoc(collectionRef, data);
-                isOpen = false;
-                dispatch('addedDocument');
+                const docRef = await addDoc(collectionRef, data)
+                isOpen = false
+                dispatch('addedDocument')
                 await Toast.fire({
-                    icon: "success",
-                    title: "Dokument úspešne vytvorený",
+                    icon: 'success',
+                    title: 'Dokument úspešne vytvorený',
                     text: `ID dokumentu: ${docRef.id}`
                 })
             } else {
                 await Toast.fire({
-                    icon: "error",
-                    title: "Dáta dokumentu nezdpovedajú schéme"
+                    icon: 'error',
+                    title: 'Dáta dokumentu nezdpovedajú schéme'
                 })
             }
         } catch (error) {
             await Toast.fire({
-                icon: "error",
-                title: "Chyba",
+                icon: 'error',
+                title: 'Chyba',
                 text: error
             })
-            throw error;
+            throw error
         }
     }
 

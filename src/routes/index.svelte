@@ -1,8 +1,8 @@
-<script context="module">
-    import {signInWithEmailAndPassword} from "@firebase/auth";
-    import { auth } from "$lib/firebase";
-    import { Toast } from "$lib/utils/alert";
-    import config from "$lib/config/"
+<script context="module" lang="ts">
+    import { signInWithEmailAndPassword } from '@firebase/auth'
+    import { auth } from '$lib/firebase'
+    import { Toast } from '$lib/utils/alert'
+    import config from '$lib/config/'
 
     const verifyUser = async (email, password) => {
         if (!config.isAdminAccount(email)) throw { code: 'userIsNotAdmin', message: '' }
@@ -17,7 +17,7 @@
         verifyUser
     }
 </script>
-<script>
+<script lang="ts">
     import {
         Row,
         Col,
@@ -27,27 +27,27 @@
         Modal,
         ModalHeader,
         ModalBody
-    } from "sveltestrap";
+    } from 'sveltestrap'
     import {
         sendPasswordResetEmail
-    } from "@firebase/auth";
-    import {  user } from "$lib/firebase";
-    import { goto } from "$app/navigation";
-    import { _ } from 'svelte-i18n';
-    import { handleAuthError } from "$lib/firebase/errorHandling";
-    import { browser } from "$app/env";
+    } from '@firebase/auth'
+    import { user } from '$lib/firebase'
+    import { goto } from '$app/navigation'
+    import { _ } from 'svelte-i18n'
+    import { handleAuthError } from '$lib/firebase/errorHandling'
+    import { browser } from '$app/env'
 
-    let resetModalIsOpen = false;
-    let email = '';
-    let password = '';
+    let resetModalIsOpen = false
+    let email = ''
+    let password = ''
 
 
     const togglePasswordResetModal = () => {
-        resetModalIsOpen = !resetModalIsOpen;
+        resetModalIsOpen = !resetModalIsOpen
     }
     const login = async () => {
         try {
-            await verifyUser(email, password);
+            await verifyUser(email, password)
         } catch (error) {
             await handleAuthError(error)
         }
@@ -55,10 +55,10 @@
     const resetPassword = async () => {
         try {
             await sendPasswordResetEmail(auth, email)
-            togglePasswordResetModal();
+            togglePasswordResetModal()
             await Toast.fire({
                 icon: 'success',
-                title: `Email na reset hesla bol odoslaný`
+                title: 'Email na reset hesla bol odoslaný'
             })
         } catch (error) {
             await handleAuthError(error)

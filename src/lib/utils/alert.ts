@@ -1,4 +1,4 @@
-import Sweetalert from 'sweetalert2';
+import Sweetalert from 'sweetalert2'
 
 const Toast = Sweetalert.mixin({
     toast: true,
@@ -14,4 +14,4 @@ const Toast = Sweetalert.mixin({
 
 export {
     Toast
-};
+}

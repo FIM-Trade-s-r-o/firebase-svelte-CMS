@@ -1,39 +1,38 @@
 <script context="module" lang="ts">
-    import { firestore } from "$lib/firebase";
-    import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-    import config from "$lib/config";
+    import { firestore } from '$lib/firebase'
+    import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+    import config from '$lib/config'
 
-	const getCollection = async (collectionName) => {
-        const sorting = config.getCollection(collectionName).sortBy;
-        let docsSnap;
+const getCollection = async (collectionName) => {
+        const sorting = config.getCollection(collectionName).sortBy
+        let docsSnap
         if (sorting) {
-            docsSnap = await getDocs(query(collection(firestore, collectionName), orderBy(sorting.property, sorting.sort)));
+            docsSnap = await getDocs(query(collection(firestore, collectionName), orderBy(sorting.property, sorting.sort)))
         } else {
-            docsSnap = await getDocs(collection(firestore, collectionName));
+            docsSnap = await getDocs(collection(firestore, collectionName))
         }
 
-		let collectionData = [];
-		await docsSnap.forEach(document => {
-			//console.log(document)
-			collectionData = [
-				...collectionData,
-				{
-					id: document.id,
-					...document.data()
-				}
-			]
-		})
-		return collectionData;
-	}
-    export async function load({ params }) {
-	    const collectionName = params.collection;
-	
-	    return {
+        let collectionData = []
+        await docsSnap.forEach(document => {
+        // console.log(document)
+            collectionData = [
+                ...collectionData,
+                {
+                    id: document.id,
+                    ...document.data()
+                }
+            ]
+        })
+        return collectionData
+}
+    export async function load ({ params }) {
+        const collectionName = params.collection
+        return {
             props: {
                 collectionData: getCollection(collectionName),
                 collectionName
             }
-        };
+        }
     }
 </script>
 <script lang="ts">
@@ -42,22 +41,22 @@
         Col,
         Button,
         Icon, Spinner
-    } from "sveltestrap";
-    import Document from "$lib/components/Document.svelte";
-    import EmptyCollection from "$lib/components/EmptyCollection.svelte";
-    import NewDocumentModal from "$lib/components/NewDocumentModal.svelte";
-    import CollectionHeader from "$lib/components/CollectionHeader.svelte";
+    } from 'sveltestrap'
+    import Document from '$lib/components/Document.svelte'
+    import EmptyCollection from '$lib/components/EmptyCollection.svelte'
+    import NewDocumentModal from '$lib/components/NewDocumentModal.svelte'
+    import CollectionHeader from '$lib/components/CollectionHeader.svelte'
 
-    export let collectionData: object;
-    export let collectionName: string;
-    const schema = config.getCollection(collectionName).schema;
-    let isNewDocumentModalOpen = false;
+    export let collectionData: object
+    export let collectionName: string
+    const schema = config.getCollection(collectionName).schema
+    let isNewDocumentModalOpen = false
     const openNewDocumentModal = () => {
-      isNewDocumentModalOpen = true;
+        isNewDocumentModalOpen = true
     }
     const reload = () => {
-        collectionData = getCollection(collectionName);
-    };
+        collectionData = getCollection(collectionName)
+    }
 
 </script>
 

@@ -5,12 +5,12 @@
         CardBody,
         CardFooter,
         Icon, Button
-    } from "sveltestrap";
+    } from 'sveltestrap'
 
-    export let value;
+    export let value
 
-    $: name = value.name;
-    $: path = value.fullPath.replaceAll('/', '|');
+    $: name = value.name
+    $: path = value.fullPath.replaceAll('/', '|')
 </script>
 
 <Col xs="12" sm="6" md="4" lg="3" xl="2" class="h-auto mb-4">

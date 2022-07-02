@@ -1,45 +1,45 @@
 <script lang="ts">
-    import type Schema from "$lib/schemas/lib";
-    import {Button, Col, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "sveltestrap";
-    import { doc, updateDoc, deleteDoc } from "firebase/firestore";
-    import PropertyInput from "$lib/components/PropertyInput.svelte";
-    import {firestore} from "$lib/firebase";
-    import {Toast} from "$lib/utils/alert";
-    import { createEventDispatcher } from "svelte";
+    import type Schema from '$lib/schemas/lib'
+    import { Button, Col, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'sveltestrap'
+    import { doc, updateDoc, deleteDoc } from 'firebase/firestore'
+    import PropertyInput from '$lib/components/PropertyInput.svelte'
+    import { firestore } from '$lib/firebase'
+    import { Toast } from '$lib/utils/alert'
+    import { createEventDispatcher } from 'svelte'
 
-    export let collection: string;
-    export let schema: Schema;
-    export let data: object;
-    const documentRef = doc(firestore, collection, data.id);
-    const dispatch = createEventDispatcher();
+    export let collection: string
+    export let schema: Schema
+    export let data: object
+    const documentRef = doc(firestore, collection, data.id)
+    const dispatch = createEventDispatcher()
 
-    let isModalOpen = false;
+    let isModalOpen = false
     const toggleModal = () => {
-        isModalOpen = !isModalOpen;
+        isModalOpen = !isModalOpen
     }
     const updateData = async () => {
         if (schema.validate(data)) {
-            await updateDoc(documentRef, data);
-            toggleModal();
+            await updateDoc(documentRef, data)
+            toggleModal()
             await Toast.fire({
                 title: 'Dokument upravený',
                 icon: 'success'
-            });
+            })
         } else {
             await Toast.fire({
-                icon: "error",
-                title: "Dáta dokumentu nezdpovedajú schéme"
+                icon: 'error',
+                title: 'Dáta dokumentu nezdpovedajú schéme'
             })
         }
     }
     const deleteDocument = async () => {
-        await deleteDoc(documentRef);
-        toggleModal();
-        dispatch('deletedDocument');
+        await deleteDoc(documentRef)
+        toggleModal()
+        dispatch('deletedDocument')
         await Toast.fire({
             title: 'Dokument vymazaný',
             icon: 'success'
-        });
+        })
     }
 
 </script>

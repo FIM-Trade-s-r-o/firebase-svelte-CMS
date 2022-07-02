@@ -1,13 +1,13 @@
-function hasOwnProperty<T, K extends PropertyKey>(
+function hasOwnProperty<T, K extends PropertyKey> (
     obj: T,
     prop: K
 ): obj is T & Record<K, unknown> {
-    return Object.prototype.hasOwnProperty.call(obj, prop);
+    return Object.prototype.hasOwnProperty.call(obj, prop)
 }
 
 class Schema {
-    readonly #dataModel: object = {};
-    constructor(model) {
+    readonly #dataModel: object = {}
+    constructor (model) {
         for (const property in model) {
             if (typeof model[property] !== 'object') {
                 model[property] = {
@@ -16,15 +16,18 @@ class Schema {
                 }
             }
         }
-        this.#dataModel = model;
+        this.#dataModel = model
     }
-    get dataModel() {
-        return this.#dataModel;
+
+    get dataModel () {
+        return this.#dataModel
     }
-    get properties(): Array<string> {
-        return Object.getOwnPropertyNames(this.#dataModel);
+
+    get properties (): Array<string> {
+        return Object.getOwnPropertyNames(this.#dataModel)
     }
-    forEach(callback): void {
+
+    forEach (callback): void {
         for (const property in this.#dataModel) {
             if (hasOwnProperty(this.#dataModel, property)) {
                 if (
@@ -32,46 +35,47 @@ class Schema {
                         property,
                         type: this.#dataModel[property]
                     })
-                ) return;
+                ) return
             }
         }
     }
-    validate(potentialInstance: object): boolean {
+
+    validate (potentialInstance: object): boolean {
         for (const property in this.#dataModel) {
-            const { type: requiredType, required } = this.#dataModel[property];
+            const { type: requiredType, required } = this.#dataModel[property]
 
             if (hasOwnProperty(potentialInstance, property)) {
                 if (required && !potentialInstance[property]) {
-                    console.warn('Required property contains no information');
-                    return false;
+                    console.warn('Required property contains no information')
+                    return false
                 }
                 switch (requiredType) {
-                    case Boolean:
-                    case Number:
-                    case String:
-                    case Symbol:
-                    case BigInt: {
-                        const expectedType =  typeof requiredType();
-                        const actualType = typeof potentialInstance[property];
-                        if (actualType !== expectedType) {
-                            console.warn(`Type checking has failed at property: ${property},
+                case Boolean:
+                case Number:
+                case String:
+                case Symbol:
+                case BigInt: {
+                    const expectedType = typeof requiredType()
+                    const actualType = typeof potentialInstance[property]
+                    if (actualType !== expectedType) {
+                        console.warn(`Type checking has failed at property: ${property},
                             expected type: ${expectedType},
-                            actual type: ${actualType}`);
-                            return false;
-                        }
-                        break;
+                            actual type: ${actualType}`)
+                        return false
                     }
-                    default: {
-                        console.warn('Non-primitive property, omitting type validation')
-                    }
+                    break
+                }
+                default: {
+                    console.warn('Non-primitive property, omitting type validation')
+                }
                 }
             } else if (required) {
-                console.warn('Missing required property');
-                return false;
+                console.warn('Missing required property')
+                return false
             }
         }
-        return true;
+        return true
     }
 }
 
-export default Schema;
+export default Schema

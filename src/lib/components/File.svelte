@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { getDownloadURL, deleteObject } from 'firebase/storage';
-    import { createEventDispatcher } from "svelte";
-    import { Toast } from "$lib/utils/alert";
+    import { getDownloadURL, deleteObject } from 'firebase/storage'
+    import { createEventDispatcher } from 'svelte'
+    import { Toast } from '$lib/utils/alert'
     import {
         Col,
         Card,
@@ -9,28 +9,28 @@
         CardFooter,
         Icon,
         ListGroupItem
-    } from "sveltestrap";
-    import ContextMenu from "$lib/components/ContextMenu.svelte";
+    } from 'sveltestrap'
+    import ContextMenu from '$lib/components/ContextMenu.svelte'
 
-    export let value;
-    const dispatch = createEventDispatcher();
-    let name: string;
-    let contextMenuOpener: boolean;
-    let url: string;
+    export let value
+    const dispatch = createEventDispatcher()
+    let name: string
+    let contextMenuOpener: boolean
+    let url: string
 
     const openContextMenu = (event) => {
-        contextMenuOpener = event;
+        contextMenuOpener = event
     }
     const deleteFile = async () => {
-        await deleteObject(value);
-        dispatch('delete');
+        await deleteObject(value)
+        dispatch('delete')
         await Toast.fire({
             title: 'Súbor úspešne vymazaný',
             icon: 'success'
         })
     }
     const copyLink = async () => {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(url)
         await Toast.fire({
             title: 'Link skopírovaný',
             icon: 'success',
@@ -38,11 +38,11 @@
         })
     }
     const getUrl = async (reference) => {
-        url = await getDownloadURL(reference);
+        url = await getDownloadURL(reference)
     }
 
-    $: getUrl(value);
-    $: name = value.name;
+    $: getUrl(value)
+    $: name = value.name
 </script>
 
 <ContextMenu bind:opener={contextMenuOpener}>

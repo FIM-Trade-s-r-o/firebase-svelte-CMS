@@ -1,4 +1,4 @@
-import type Schema from "$lib/schemas/lib";
+import type Schema from '$lib/schemas/lib'
 
 interface Sorting {
     property: string,
@@ -17,28 +17,30 @@ interface GlobalConfig {
 }
 
 class Config {
-    #adminAccounts: Array<string>;
-    collections: Array<Collection>;
-    constructor({ adminAccounts, collections }: GlobalConfig) {
-        this.#adminAccounts = adminAccounts;
-        this.collections = collections;
+    #adminAccounts: Array<string>
+    collections: Array<Collection>
+    constructor ({ adminAccounts, collections }: GlobalConfig) {
+        this.#adminAccounts = adminAccounts
+        this.collections = collections
     }
-    isAdminAccount(emailToCheck: string): boolean {
-        let match = false;
+
+    isAdminAccount (emailToCheck: string): boolean {
+        let match = false
         this.#adminAccounts.forEach(email => {
             if (email === emailToCheck) {
-                match = true;
+                match = true
             }
         })
-        return match;
+        return match
     }
-    getCollection(name: string): Collection {
+
+    getCollection (name: string): Collection {
         for (const collection of this.collections) {
             if (name === collection.name) {
-                return collection;
+                return collection
             }
         }
     }
 }
 
-export default Config;
+export default Config

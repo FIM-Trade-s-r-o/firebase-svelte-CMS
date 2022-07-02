@@ -1,12 +1,11 @@
-<script>
-    import 'bootstrap/scss/bootstrap.scss';
+<script lang="ts">
+    import { Container } from 'sveltestrap'
+    import 'bootstrap/scss/bootstrap.scss'
     import '$lib/scss/custom.scss'
-    import 'bootstrap-icons/font/bootstrap-icons.css';
-    import '$lib/locales/index.ts';
-    import 'sweetalert2/src/sweetalert2.scss';
-    import '$lib/fonts/comfortaa/comfortaa.css';
-    import { user } from "$lib/firebase/index";
-    import {Container} from "sveltestrap";
+    import 'bootstrap-icons/font/bootstrap-icons.css'
+    import '$lib/locales/index.ts'
+    import 'sweetalert2/src/sweetalert2.scss'
+    import '$lib/fonts/comfortaa/comfortaa.css'
 
     // $: console.log($user)
 </script>

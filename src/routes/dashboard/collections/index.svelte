@@ -1,14 +1,14 @@
-<script>
+<script lang="ts">
 	import {
-		Row,
-		Col,
-		ButtonGroup,
-		Button,
-		Icon
-	} from 'sveltestrap';
-	import config from '$lib/config/index';
-	
-	const collections = config.collections;
+	    Row,
+	    Col,
+	    ButtonGroup,
+	    Button,
+	    Icon
+	} from 'sveltestrap'
+	import config from '$lib/config'
+
+	const collections = config.collections
 </script>
 
 <Row class="justify-content-end align-items-center bg-dark">

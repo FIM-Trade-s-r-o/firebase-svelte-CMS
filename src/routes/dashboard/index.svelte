@@ -1,22 +1,22 @@
-<script>
+<script lang="ts">
     import {
         Row,
         Col,
         Button,
         Icon
-    } from "sveltestrap";
-    import {auth, user} from "$lib/firebase";
-    import { signOut } from "firebase/auth";
-    import { Toast } from "$lib/utils/alert";
-    import { handleAuthError } from "$lib/firebase/errorHandling";
+    } from 'sveltestrap'
+    import { auth, user } from '$lib/firebase'
+    import { signOut } from 'firebase/auth'
+    import { Toast } from '$lib/utils/alert'
+    import { handleAuthError } from '$lib/firebase/errorHandling'
 
     const logOut = async () => {
         try {
-            await signOut(auth);
+            await signOut(auth)
             Toast.fire({
                 icon: 'success',
-                title: `Úspešné odhlásenie`
-            });
+                title: 'Úspešné odhlásenie'
+            })
         } catch (error) {
             await handleAuthError(error)
         }
@@ -27,7 +27,7 @@
     <Row class="justify-content-between align-items-center bg-dark">
         <Col xs="auto" class="text-white">
 	        <h4 class="my-3">
-		        {$user?.displayName || ""}
+		        {$user?.displayName || ''}
 	        </h4>
         </Col>
         <Col xs="auto">

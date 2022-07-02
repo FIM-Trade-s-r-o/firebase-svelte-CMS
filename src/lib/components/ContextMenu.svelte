@@ -2,17 +2,17 @@
     import {
         ListGroup,
         Portal
-    } from "sveltestrap";
+    } from 'sveltestrap'
 
-    export let opener = null;
-    let isOpen = false;
-    let style: string;
-    let screenWidth: number;
-    let menuWidth: number;
+    export let opener = null
+    let isOpen = false
+    let style: string
+    let screenWidth: number
+    let menuWidth: number
 
     const open = (event) => {
         if (event) {
-            isOpen = true;
+            isOpen = true
             if (event.x + menuWidth > screenWidth) {
                 style = `right: ${0}; top: ${event.y}px`
             } else {
@@ -21,10 +21,10 @@
         }
     }
     const close = () => {
-        isOpen = false;
+        isOpen = false
     }
 
-    $: open(opener);
+    $: open(opener)
 </script>
 
 <svelte:window bind:innerWidth={screenWidth} on:resize={close}/>
