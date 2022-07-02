@@ -33,7 +33,6 @@
     } from '@firebase/auth'
     import { user } from '$lib/firebase'
     import { goto } from '$app/navigation'
-    import { _ } from 'svelte-i18n'
     import { handleAuthError } from '$lib/firebase/errorHandling'
     import { browser } from '$app/env'
 
@@ -46,6 +45,7 @@
         resetModalIsOpen = !resetModalIsOpen
     }
     const login = async () => {
+        console.log(email, password)
         try {
             await verifyUser(email, password)
         } catch (error) {
@@ -87,9 +87,7 @@
                         <label for="email">
                             E-mail
                         </label>
-                        <Input bind:value={email} id="email" class="rounded-0 bg-light"
-                               required type="email"
-                        />
+                        <Input bind:value={email} id="email" name="email" type="email" required class="rounded-0 bg-light"/>
                     </FormGroup>
                 </Col>
             </Row>
@@ -99,9 +97,8 @@
                         <label for="password">
                             Heslo
                         </label>
-                        <Input bind:value={password} id="password"
-                               class="rounded-0 bg-light" required type="password"
-                        />
+                        <Input bind:value={password} id="password" name="password" type="password" required
+                               class="rounded-0 bg-light"/>
                     </FormGroup>
                 </Col>
             </Row>
@@ -112,7 +109,7 @@
                     </Button>
                 </Col>
                 <Col xs="12">
-                    <Button color="link" class="link-dark" on:click={togglePasswordResetModal}>
+                    <Button color="link" type="button" on:click={togglePasswordResetModal} class="link-dark">
                         Neviem svoje heslo
                     </Button>
                 </Col>
@@ -128,12 +125,11 @@
     <ModalBody>
         <form on:submit|preventDefault={resetPassword}>
             <FormGroup>
-                <label for="email">
+                <label for="resetEmail">
                     E-mail
                 </label>
-                <Input bind:value={email} id="email" class="rounded-0 bg-light"
-                       required type="email"
-                />
+                <Input bind:value={email} id="resetEmail" name="resetEmail" type="email" required
+                       class="rounded-0 bg-light"/>
             </FormGroup>
             <Row class="justify-content-end">
                 <Col xs="auto">
