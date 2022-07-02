@@ -45,7 +45,6 @@
         resetModalIsOpen = !resetModalIsOpen
     }
     const login = async () => {
-        console.log(email, password)
         try {
             await verifyUser(email, password)
         } catch (error) {
