@@ -5,12 +5,15 @@
     import config from '$lib/config/'
 
     const verifyUser = async (email, password) => {
-        if (!config.isAdminAccount(email)) throw { code: 'userIsNotAdmin', message: '' }
-        const userCredential = await signInWithEmailAndPassword(auth, email, password)
-        await Toast.fire({
-            icon: 'success',
-            title: `Vitaj ${userCredential.user.displayName}`
-        })
+        if (await config.isAdminAccount(email)) {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            await Toast.fire({
+                icon: 'success',
+                title: `Vitaj ${userCredential.user.displayName}`
+            })
+        } else {
+            throw { code: 'userIsNotAdmin', message: '' }
+        }
     }
 
     export {
