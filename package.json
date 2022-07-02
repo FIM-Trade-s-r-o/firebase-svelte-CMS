@@ -2,14 +2,12 @@
 	"name": "firebase-svelte-cms",
 	"version": "0.0.1",
 	"scripts": {
-		"dev": "svelte-kit dev",
-		"build": "svelte-kit build",
-		"package": "svelte-kit package",
-		"preview": "svelte-kit preview",
-		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
-		"format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
+		"CMS:dev": "svelte-kit dev",
+		"CMS:build": "svelte-kit build",
+		"CMS:package": "svelte-kit package",
+		"CMS:preview": "svelte-kit preview",
+		"CMS:check": "svelte-check --tsconfig ./tsconfig.json",
+		"CMS:check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
 		"@sveltejs/kit": "1.0.0-next.330",
