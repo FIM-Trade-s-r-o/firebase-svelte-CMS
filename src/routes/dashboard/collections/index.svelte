@@ -2,11 +2,11 @@
 	import {
 	    Row,
 	    Col,
-	    ButtonGroup,
 	    Button,
 	    Icon
 	} from 'sveltestrap'
 	import config from '$lib/config'
+	import CollectionThumbnail from '$lib/components/CollectionThumbnail.svelte'
 
 	const collections = config.collections
 </script>
@@ -23,17 +23,11 @@
 		</Button>
 	</Col>
 </Row>
-<Row class="justify-content-center pt-4">
-	<Col xs="8">
-		<ButtonGroup flush class="w-100">
-			{#each collections as { name }}
-				<Button href="/dashboard/collections/{name}" color="primary" class="text-center mb-2">
-					{name}
-				</Button>
-			{:else}
-				Žiaden upravitelný obsah
-				<!--{$_('page.dashboard.noCollections')}-->
-			{/each}
-		</ButtonGroup>
-	</Col>
+<Row class="px-1 py-3">
+	{#each collections as { name }}
+		<CollectionThumbnail collection={name}/>
+	{:else}
+		Žiaden upravitelný obsah
+		<!--{$_('page.dashboard.noCollections')}-->
+	{/each}
 </Row>
