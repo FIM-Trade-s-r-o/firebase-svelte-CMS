@@ -1,5 +1,7 @@
 <script lang="ts">
     import { FormGroup, Input } from 'sveltestrap'
+    import { Markdown } from '$lib/schemas/lib/types'
+    import MarkdownInput from '$lib/components/MarkdownInput.svelte'
 
     export let value
     export let schema
@@ -15,6 +17,10 @@
         case Number:
         case BigInt: {
             type = 'number'
+            break
+        }
+        case Markdown: {
+            type = 'markdown'
             break
         }
         case String: {
@@ -34,6 +40,10 @@
     }
 </script>
 
-<FormGroup>
-    <Input {type} bind:value required={isRequired} placeholder={isRequired ? 'povinné' : ''}/>
-</FormGroup>
+{#if type === 'markdown'}
+    <MarkdownInput bind:value/>
+{:else}
+    <FormGroup>
+        <Input {type} bind:value required={isRequired} placeholder={isRequired ? 'povinné' : ''}/>
+    </FormGroup>
+{/if}

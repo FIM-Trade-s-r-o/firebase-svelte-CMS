@@ -1,3 +1,7 @@
+import {
+    Markdown
+} from './types'
+
 function hasOwnProperty<T, K extends PropertyKey> (
     obj: T,
     prop: K
@@ -49,6 +53,7 @@ class Schema {
                     console.warn('Required property contains no information')
                     return false
                 }
+                const actualType = typeof potentialInstance[property]
                 switch (requiredType) {
                 case Boolean:
                 case Number:
@@ -56,11 +61,19 @@ class Schema {
                 case Symbol:
                 case BigInt: {
                     const expectedType = typeof requiredType()
-                    const actualType = typeof potentialInstance[property]
                     if (actualType !== expectedType) {
                         console.warn(`Type checking has failed at property: ${property},
                             expected type: ${expectedType},
                             actual type: ${actualType}`)
+                        return false
+                    }
+                    break
+                }
+                case Markdown: {
+                    if (actualType !== 'string') {
+                        console.warn(`Type checking has failed at property: ${property},
+                       expected type: string,
+                       actual type: ${actualType}`)
                         return false
                     }
                     break
