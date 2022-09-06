@@ -4,7 +4,7 @@
         Row
     } from 'sveltestrap'
     import { user } from '$lib/firebase'
-    import { browser } from '$app/env'
+    import { browser } from '$app/environment'
     import { goto } from '$app/navigation'
     import Sidebar from '$lib/components/Sidebar.svelte'
 

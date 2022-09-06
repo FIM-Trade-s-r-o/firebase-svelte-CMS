@@ -37,7 +37,7 @@
     import { user } from '$lib/firebase'
     import { goto } from '$app/navigation'
     import { handleAuthError } from '$lib/firebase/errorHandling'
-    import { browser } from '$app/env'
+    import { browser } from '$app/environment'
 
     let resetModalIsOpen = false
     let email = ''
