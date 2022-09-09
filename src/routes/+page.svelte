@@ -1,25 +1,3 @@
-<script context="module" lang="ts">
-    import { signInWithEmailAndPassword } from '@firebase/auth'
-    import { auth } from '$lib/firebase'
-    import { Toast } from '$lib/utils/alert'
-    import config from '$lib/config/'
-
-    const verifyUser = async (email, password) => {
-        if (await config.isAdminAccount(email)) {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password)
-            await Toast.fire({
-                icon: 'success',
-                title: `Vitaj ${userCredential.user.displayName}`
-            })
-        } else {
-            throw { code: 'userIsNotAdmin', message: '' }
-        }
-    }
-
-    export {
-        verifyUser
-    }
-</script>
 <script lang="ts">
     import {
         Row,
@@ -32,26 +10,38 @@
         ModalBody
     } from 'sveltestrap'
     import {
-        sendPasswordResetEmail
+        sendPasswordResetEmail,
+        signInWithEmailAndPassword
     } from '@firebase/auth'
-    import { user } from '$lib/firebase'
+    import { auth, user } from '$lib/firebase'
     import { goto } from '$app/navigation'
     import { handleAuthError } from '$lib/firebase/errorHandling'
     import { browser } from '$app/environment'
+    import { applyAction, enhance } from '$app/forms'
+    import { Toast } from '$lib/utils/alert'
 
     let resetModalIsOpen = false
     let email = ''
     let password = ''
 
-
     const togglePasswordResetModal = () => {
         resetModalIsOpen = !resetModalIsOpen
     }
-    const login = async () => {
-        try {
-            await verifyUser(email, password)
-        } catch (error) {
-            await handleAuthError(error)
+    const login = () => {
+        return async ({ result }) => {
+            if (result.type === 'invalid') {
+                await handleAuthError(result.data.error)
+            } else if (result.data) {
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password)
+                    Toast.fire({
+                        icon: 'success',
+                        title: `Vitaj ${userCredential.user.displayName}`
+                    })
+                } catch (error) {
+                    await handleAuthError(error)
+                }
+            }
         }
     }
     const resetPassword = async () => {
@@ -74,7 +64,7 @@
 
 <Row class="min-h-100 align-content-center justify-content-center" style="padding-bottom: 30%">
     <Col xs="12" md="10" lg="8">
-        <form on:submit|preventDefault={login}>
+        <form method="POST" use:enhance={login}>
             <Row>
                 <Col xs="12">
                     <h1 class="text-center">
