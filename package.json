@@ -2,15 +2,15 @@
 	"name": "firebase-svelte-cms",
 	"version": "0.0.1",
 	"scripts": {
-		"CMS:dev": "svelte-kit dev",
-		"CMS:build": "svelte-kit build",
+		"CMS:dev": "vite dev",
+		"CMS:build": "vite build",
 		"CMS:package": "svelte-kit package",
-		"CMS:preview": "svelte-kit preview",
+		"CMS:preview": "vite preview",
 		"CMS:check": "svelte-check --tsconfig ./tsconfig.json",
 		"CMS:check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
-		"@sveltejs/kit": "1.0.0-next.355",
+		"@sveltejs/kit": "1.0.0-next.479",
 		"@types/sanitize-html": "^2.6.2",
 		"@typescript-eslint/eslint-plugin": "^5.30.3",
 		"@typescript-eslint/parser": "^5.30.3",
@@ -24,11 +24,11 @@
 		"sanitize-html": "^2.7.0",
 		"sass": "^1.49.7",
 		"svelte": "^3.48.0",
-		"svelte-adapter-firebase": "^0.14.1",
+		"svelte-adapter-firebase": "^0.14.4",
 		"svelte-check": "^2.2.6",
 		"svelte-i18n": "^3.3.13",
 		"svelte-preprocess": "^4.10.7",
-		"sveltestrap": "^5.9.0",
+		"sveltestrap": "github:ClapClap-app/sveltestrap",
 		"sweetalert2": "^11.3.10",
 		"tslib": "^2.4.0",
 		"typescript": "^4.7.4"

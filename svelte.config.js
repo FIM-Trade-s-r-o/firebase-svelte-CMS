@@ -8,12 +8,7 @@ const config = {
     preprocess: preprocess(),
 
     kit: {
-        adapter: adapter(),
-        vite: {
-            ssr: {
-                noExternal: ['@popperjs/core']
-            }
-        }
+        adapter: adapter()
     }
 }
 
