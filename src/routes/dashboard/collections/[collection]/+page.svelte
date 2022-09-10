@@ -1,40 +1,3 @@
-<script context="module" lang="ts">
-    import { firestore } from '$lib/firebase'
-    import { collection, getDocs, query, orderBy } from 'firebase/firestore'
-    import config from '$lib/config'
-
-const getCollection = async (collectionName) => {
-        const sorting = config.getCollection(collectionName).sortBy
-        let docsSnap
-        if (sorting) {
-            docsSnap = await getDocs(query(collection(firestore, collectionName), orderBy(sorting.property, sorting.sort)))
-        } else {
-            docsSnap = await getDocs(collection(firestore, collectionName))
-        }
-
-        let collectionData = []
-        await docsSnap.forEach(document => {
-        // console.log(document)
-            collectionData = [
-                ...collectionData,
-                {
-                    id: document.id,
-                    ...document.data()
-                }
-            ]
-        })
-        return collectionData
-}
-    export async function load ({ params }) {
-        const collectionName = params.collection
-        return {
-            props: {
-                collectionData: getCollection(collectionName),
-                collectionName
-            }
-        }
-    }
-</script>
 <script lang="ts">
     import {
         Row,
@@ -46,18 +9,20 @@ const getCollection = async (collectionName) => {
     import EmptyCollection from '$lib/components/EmptyCollection.svelte'
     import NewDocumentModal from '$lib/components/NewDocumentModal.svelte'
     import CollectionHeader from '$lib/components/CollectionHeader.svelte'
+    import config from '$lib/config'
+    import { invalidateAll } from '$app/navigation'
 
-    export let collectionData: object
-    export let collectionName: string
+    export let data
+    const collectionData: object = data.collectionData
+    const collectionName: string = data.collectionName
     const schema = config.getCollection(collectionName).schema
     let isNewDocumentModalOpen = false
     const openNewDocumentModal = () => {
         isNewDocumentModalOpen = true
     }
     const reload = () => {
-        collectionData = getCollection(collectionName)
+        invalidateAll()
     }
-
 </script>
 
 <Row class="justify-content-end align-items-center bg-dark">
