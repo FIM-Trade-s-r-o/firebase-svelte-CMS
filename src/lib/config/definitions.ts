@@ -8,10 +8,29 @@ interface Sorting {
     sort: 'asc' | 'desc'
 }
 
-interface Collection {
+interface CollectionT {
     name: string,
     schema: Schema,
     sortBy?: Sorting
+}
+
+class Collection implements CollectionT {
+    name: string
+    schema: Schema
+    sortBy?: Sorting
+    constructor ({ name, schema, sortBy }: CollectionT) {
+        this.name = name
+        this.schema = schema
+        this.sortBy = sortBy
+    }
+
+    toJSON () {
+        return {
+            name: this.name,
+            schema: this.schema.toJSON(),
+            sortBy: this.sortBy
+        }
+    }
 }
 
 interface GlobalConfig {
@@ -39,7 +58,10 @@ class Config implements ConfigT {
         if (adminCollection) {
             this.#adminCollection = collection(firestore, adminCollection)
         }
-        this.collections = collections
+        this.collections = []
+        for (const collection of collections) {
+            this.collections.push(new Collection(collection))
+        }
     }
 
     // Calling of this function must be on server side
@@ -66,6 +88,14 @@ class Config implements ConfigT {
                 return collection
             }
         }
+    }
+
+    get serializedCollections () {
+        const serializedCollections = []
+        for (const collection of this.collections) {
+            serializedCollections.push(collection.toJSON())
+        }
+        return serializedCollections
     }
 }
 
