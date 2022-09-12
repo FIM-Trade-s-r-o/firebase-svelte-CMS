@@ -1,9 +1,9 @@
 import sanitize from 'sanitize-html'
 
-class Markdown extends String {
-    constructor (markdown) {
-        super(sanitize(markdown))
-    }
+function Markdown (markdown) {
+    if (markdown) {
+        sanitize(markdown)
+    } else return 'md'
 }
 
 export {

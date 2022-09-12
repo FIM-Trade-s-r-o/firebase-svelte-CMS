@@ -10,24 +10,125 @@ function hasOwnProperty<T, K extends PropertyKey> (
 }
 
 type PropertyDescriptorType = BooleanConstructor | NumberConstructor | StringConstructor | SymbolConstructor | BigIntConstructor | Markdown
+type SerializedPropertyDescriptorType = boolean | number | string | symbol | bigint
 
-interface PropertyDescriptor {
+interface PropertyDescriptorT {
     type: PropertyDescriptorType,
     required: boolean
+}
+interface SerializedPropertyDescriptor {
+    type: SerializedPropertyDescriptorType,
+    required: boolean
+}
+
+class PropertyDescriptor implements PropertyDescriptorT {
+    type
+    required
+    constructor (model, deserialize = false) {
+        if (deserialize) {
+            this.#deserialize(model)
+        } else {
+            this.#processFromLiteral(model)
+        }
+    }
+
+    #processFromLiteral ({ type, required }: PropertyDescriptorT) {
+        this.type = type
+        this.required = required
+    }
+
+    #deserialize ({ type, required }: SerializedPropertyDescriptor) {
+        switch (typeof type) {
+            case 'boolean': {
+                this.type = Boolean
+                break
+            }
+            case 'number': {
+                this.type = Number
+            }
+            case 'string': {
+                if (type === 'md') {
+                    this.type = Markdown
+                } else {
+                    this.type = String
+                }
+            }
+            case 'symbol': {
+                this.type = Symbol
+            }
+            case 'bigint': {
+                this.type = BigInt
+            }
+            default: {
+                console.trace('Deserialization')
+                throw new Error(`Unsupported type: ${typeof type}`)
+            }
+        }
+        this.required = required
+    }
+
+    validate (data): boolean {
+        if (this.required && !data) {
+            console.warn('Required property contains no information')
+            return false
+        }
+        const actualType = typeof data
+        switch (this.type) {
+            case Boolean:
+            case Number:
+            case String:
+            case Symbol:
+            case BigInt: {
+                const expectedType = typeof this.type()
+                if (actualType !== expectedType) {
+                    console.warn(`Type checking has failed at property with data: ${data},
+                            expected type: ${expectedType},
+                            actual type: ${actualType}`)
+                    return false
+                }
+                break
+            }
+            case Markdown: {
+                if (actualType !== 'string') {
+                    console.warn(`Type checking has failed at property with data: ${data},
+                       expected type: string,
+                       actual type: ${actualType}`)
+                    return false
+                }
+                break
+            }
+            default: {
+                console.warn('Non-primitive property, omitting type validation')
+            }
+        }
+        return true
+    }
+
+    toJSON (): SerializedPropertyDescriptor {
+        return {
+            type: this.type(),
+            required: this.required
+        }
+    }
 }
 
 class Schema {
     readonly #dataModel: { [key: string]: PropertyDescriptor } = {}
-    constructor (model) {
+    constructor (model, deserialize = false) {
         for (const property in model) {
+            let type: PropertyDescriptorT | SerializedPropertyDescriptor
+            let required = false
             if (typeof model[property] !== 'object') {
-                model[property] = {
-                    type: model[property],
-                    required: false
-                }
+                type = model[property]
+            } else {
+                type = model[property].type
+                required = model[property].required || false
             }
+            this.#dataModel[property] = new PropertyDescriptor({
+                type,
+                required
+            }, deserialize)
         }
-        this.#dataModel = model
     }
 
     get dataModel () {
@@ -53,48 +154,24 @@ class Schema {
 
     validate (potentialInstance: object): boolean {
         for (const property in this.#dataModel) {
-            const { type: requiredType, required } = this.#dataModel[property]
-
             if (hasOwnProperty(potentialInstance, property)) {
-                if (required && !potentialInstance[property]) {
-                    console.warn('Required property contains no information')
+                if (!this.#dataModel[property].validate(potentialInstance[property])) {
                     return false
                 }
-                const actualType = typeof potentialInstance[property]
-                switch (requiredType) {
-                case Boolean:
-                case Number:
-                case String:
-                case Symbol:
-                case BigInt: {
-                    const expectedType = typeof requiredType()
-                    if (actualType !== expectedType) {
-                        console.warn(`Type checking has failed at property: ${property},
-                            expected type: ${expectedType},
-                            actual type: ${actualType}`)
-                        return false
-                    }
-                    break
-                }
-                case Markdown: {
-                    if (actualType !== 'string') {
-                        console.warn(`Type checking has failed at property: ${property},
-                       expected type: string,
-                       actual type: ${actualType}`)
-                        return false
-                    }
-                    break
-                }
-                default: {
-                    console.warn('Non-primitive property, omitting type validation')
-                }
-                }
-            } else if (required) {
+            } else if (this.#dataModel[property].required) {
                 console.warn('Missing required property')
                 return false
             }
         }
         return true
+    }
+
+    toJSON () {
+        const json = {}
+        for (const dataModelKey in this.#dataModel) {
+            json[dataModelKey] = this.#dataModel[dataModelKey].toJSON()
+        }
+        return json
     }
 }
 
