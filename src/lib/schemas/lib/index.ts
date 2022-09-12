@@ -9,8 +9,15 @@ function hasOwnProperty<T, K extends PropertyKey> (
     return Object.prototype.hasOwnProperty.call(obj, prop)
 }
 
+type PropertyDescriptorType = BooleanConstructor | NumberConstructor | StringConstructor | SymbolConstructor | BigIntConstructor | Markdown
+
+interface PropertyDescriptor {
+    type: PropertyDescriptorType,
+    required: boolean
+}
+
 class Schema {
-    readonly #dataModel: object = {}
+    readonly #dataModel: { [key: string]: PropertyDescriptor } = {}
     constructor (model) {
         for (const property in model) {
             if (typeof model[property] !== 'object') {
