@@ -18,6 +18,12 @@ module.exports = {
 		node: true
 	},
 	rules: {
+		'@typescript-eslint/ban-ts-comment': [
+			'error',
+			{
+				'ts-ignore': 'allow-with-description',
+			}
+		],
 		'no-multiple-empty-lines': 'off', // This has to be disabled because it detects svelte newlines that are valid
 		'import/first': 'off', // Same
 		'import/no-duplicates': 'off', // Same
