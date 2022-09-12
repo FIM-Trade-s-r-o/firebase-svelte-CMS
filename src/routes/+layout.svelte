@@ -6,8 +6,6 @@
     import '$lib/locales/index.ts'
     import 'sweetalert2/src/sweetalert2.scss'
     import '$lib/fonts/comfortaa/comfortaa.css'
-
-    // $: console.log($user)
 </script>
 
 <Container fluid class="h-100 w-100">

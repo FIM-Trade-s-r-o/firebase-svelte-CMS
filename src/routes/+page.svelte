@@ -14,6 +14,7 @@
     // import { browser } from '$app/environment'
     import { enhance } from '$app/forms'
     import { Toast } from '$lib/utils/alert'
+    import { invalidateAll } from '$app/navigation'
 
     let resetModalIsOpen = false
     let email = ''
@@ -32,6 +33,7 @@
                         icon: 'success',
                         title: `Vitaj ${result.data.name}`
                     })
+                    invalidateAll()
                 } catch (error) {
                     await handleAuthError(error)
                 }

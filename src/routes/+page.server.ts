@@ -1,11 +1,10 @@
 import config from '$lib/config'
-import {invalid, redirect} from '@sveltejs/kit'
+import { invalid } from '@sveltejs/kit'
 import {
     sendPasswordResetEmail,
     signInWithEmailAndPassword
 } from '@firebase/auth'
-import { auth, user } from '$lib/firebase'
-import { get } from 'svelte/store'
+import { auth } from '$lib/firebase'
 
 const login = async ({ request }) => {
     const data = await request.formData()
@@ -35,12 +34,4 @@ const resetPassword = async ({ request }) => {
 export const actions = {
     login,
     resetPassword
-}
-
-export async function load () {
-    console.log()
-    if (get(user)) {
-        console.log('red')
-        return redirect(300, '/dashboard')
-    }
 }

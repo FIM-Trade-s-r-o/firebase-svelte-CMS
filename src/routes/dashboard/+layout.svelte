@@ -3,14 +3,7 @@
         Col,
         Row
     } from 'sveltestrap'
-    import { user } from '$lib/firebase'
-    import { browser } from '$app/environment'
-    import { goto } from '$app/navigation'
     import Sidebar from '$lib/components/Sidebar.svelte'
-
-    $: if (!$user && browser) {
-        goto('/')
-    }
 </script>
 
 <Row class="h-100">
