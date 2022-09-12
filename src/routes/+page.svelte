@@ -9,15 +9,10 @@
         ModalHeader,
         ModalBody
     } from 'sveltestrap'
-    import {
-        sendPasswordResetEmail,
-        signInWithEmailAndPassword
-    } from '@firebase/auth'
-    import { auth, user } from '$lib/firebase'
-    import { goto } from '$app/navigation'
+    // import { goto } from '$app/navigation'
     import { handleAuthError } from '$lib/firebase/errorHandling'
-    import { browser } from '$app/environment'
-    import { applyAction, enhance } from '$app/forms'
+    // import { browser } from '$app/environment'
+    import { enhance } from '$app/forms'
     import { Toast } from '$lib/utils/alert'
 
     let resetModalIsOpen = false
@@ -33,10 +28,9 @@
                 await handleAuthError(result.data.error)
             } else if (result.data) {
                 try {
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password)
                     Toast.fire({
                         icon: 'success',
-                        title: `Vitaj ${userCredential.user.displayName}`
+                        title: `Vitaj ${result.data.name}`
                     })
                 } catch (error) {
                     await handleAuthError(error)
@@ -44,27 +38,28 @@
             }
         }
     }
-    const resetPassword = async () => {
-        try {
-            await sendPasswordResetEmail(auth, email)
-            togglePasswordResetModal()
-            await Toast.fire({
-                icon: 'success',
-                title: 'Email na reset hesla bol odoslaný'
-            })
-        } catch (error) {
-            await handleAuthError(error)
+    const resetPassword = () => {
+        return async ({ result }) => {
+            if (result.type === 'invalid') {
+                await handleAuthError(result.data.error)
+            } else {
+                togglePasswordResetModal()
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Email na reset hesla bol odoslaný'
+                })
+            }
         }
     }
 
-    $: if ($user && browser) {
-        goto('/dashboard')
-    }
+    // $: if ($user && browser) {
+    //     goto('/dashboard')
+    // }
 </script>
 
 <Row class="min-h-100 align-content-center justify-content-center" style="padding-bottom: 30%">
     <Col xs="12" md="10" lg="8">
-        <form method="POST" use:enhance={login}>
+        <form method="POST" action="?/login" use:enhance={login}>
             <Row>
                 <Col xs="12">
                     <h1 class="text-center">
@@ -115,7 +110,7 @@
         Reset hesla
     </ModalHeader>
     <ModalBody>
-        <form on:submit|preventDefault={resetPassword}>
+        <form method="POST" action="?/resetPassword" use:enhance={resetPassword}>
             <FormGroup>
                 <label for="resetEmail">
                     E-mail
