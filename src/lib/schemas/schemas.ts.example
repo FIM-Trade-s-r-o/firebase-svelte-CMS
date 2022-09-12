@@ -2,7 +2,7 @@ import Schema from '$lib/schemas/lib'; // Load schema constructor
 
 const exampleSchema = new Schema({  // model your data
     title: {
-        type: String,
+        type: String, // TODO: make possible specifying sample data 'Product title' -> Type string, maxLength: 13ch
         required: true
     },
     text: {
@@ -10,7 +10,7 @@ const exampleSchema = new Schema({  // model your data
         required: true
     },
     image: String,
-    order: Number
+    order: Number // TODO: think about sample data
 })
 
 export {
