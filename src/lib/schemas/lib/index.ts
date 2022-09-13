@@ -163,7 +163,7 @@ class Schema {
                     return false
                 }
             } else if (this.#dataModel[property].required) {
-                console.warn('Missing required property')
+                console.warn(`Missing required property: ${property}`)
                 return false
             }
         }
