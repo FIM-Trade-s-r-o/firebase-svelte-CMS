@@ -45,6 +45,7 @@ class PropertyDescriptor implements PropertyDescriptorT {
             }
             case 'number': {
                 this.type = Number
+                break
             }
             case 'string': {
                 if (type === 'md') {
@@ -52,12 +53,15 @@ class PropertyDescriptor implements PropertyDescriptorT {
                 } else {
                     this.type = String
                 }
+                break
             }
             case 'symbol': {
                 this.type = Symbol
+                break
             }
             case 'bigint': {
                 this.type = BigInt
+                break
             }
             default: {
                 console.trace('Deserialization')

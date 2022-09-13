@@ -2,7 +2,7 @@ import { firestore } from '$lib/firebase'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import config from '$lib/config'
 
-const getCollection = async (collectionName) => {
+const getCollectionData = async (collectionName) => {
     const sorting = config.getCollection(collectionName).sortBy
     let docsSnap
     if (sorting) {
@@ -26,9 +26,11 @@ const getCollection = async (collectionName) => {
 }
 export async function load ({ params }) {
     const collectionName = params.collection
-    const collectionData = await getCollection(collectionName)
+    const collectionData = await getCollectionData(collectionName)
+    const schema = config.getCollection(collectionName).schema.toJSON()
     return {
         collectionData,
-        collectionName
+        collectionName,
+        schema
     }
 }

@@ -9,13 +9,13 @@
     import EmptyCollection from '$lib/components/EmptyCollection.svelte'
     import NewDocumentModal from '$lib/components/NewDocumentModal.svelte'
     import CollectionHeader from '$lib/components/CollectionHeader.svelte'
-    import config from '$lib/config'
     import { invalidateAll } from '$app/navigation'
+    import Schema from '$lib/schemas/lib'
 
     export let data
     const collectionData: object = data.collectionData
     const collectionName: string = data.collectionName
-    const schema = config.getCollection(collectionName).schema
+    const schema = new Schema(data.schema, true)
     let isNewDocumentModalOpen = false
     const openNewDocumentModal = () => {
         isNewDocumentModalOpen = true
