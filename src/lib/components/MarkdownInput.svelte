@@ -59,7 +59,7 @@
 
     const handleChange = (event) => {
         // Sanitization
-        markdown = new Markdown(event.detail.value)
+        markdown = Markdown(event.detail.value)
         value = markdown.toString()
     }
 </script>
