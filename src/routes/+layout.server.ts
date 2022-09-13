@@ -10,7 +10,6 @@ const redirectIfNotThere = async (currentUrl: string, targetUrl: string, exact: 
 }
 
 export async function load ({ url }) {
-    console.log(url)
     if (get(user)) {
         await redirectIfNotThere(url.pathname, '/dashboard', false)
     } else {

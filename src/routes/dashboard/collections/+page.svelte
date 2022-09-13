@@ -5,10 +5,10 @@
 	    Button,
 	    Icon
 	} from 'sveltestrap'
-	import config from '$lib/config'
 	import CollectionThumbnail from '$lib/components/CollectionThumbnail.svelte'
 
-	const collections = config.collections
+	export let data
+	const collections = data.collections
 </script>
 
 <Row class="justify-content-end align-items-center bg-dark">
