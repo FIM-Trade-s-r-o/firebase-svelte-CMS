@@ -1,46 +1,50 @@
 <script lang="ts">
     import { Button, Col, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'sveltestrap'
-    import { collection, addDoc } from 'firebase/firestore'
     import PropertyInput from '$lib/components/PropertyInput.svelte'
     import type Schema from '$lib/schemas/lib'
-    import { firestore } from '$lib/firebase'
     import { Toast } from '$lib/utils/alert'
-    import { createEventDispatcher } from 'svelte'
+    import { invalidateAll } from '$app/navigation'
+    import { enhance } from '$app/forms'
 
     export let collectionName: string
     export let schema: Schema
     export let isOpen = false
-    const collectionRef = collection(firestore, collectionName)
-    const dispatch = createEventDispatcher()
     const data = {}
 
     const toggle = () => {
         isOpen = !isOpen
     }
-    const submit = async () => {
-        try {
-            if (schema.validate(data)) {
-                const docRef = await addDoc(collectionRef, data)
+    const createDocument = ({ data, cancel }) => {
+        const retrievedFormData = {}
+        schema.forEach(({ property, type }) => {
+            retrievedFormData[property] = type.type(data.get(property))
+        })
+        if (!schema.validate(retrievedFormData)) {
+            cancel()
+            Toast.fire({
+                icon: 'error',
+                title: 'Dáta dokumentu nezdpovedajú schéme'
+            })
+        }
+        data.set('collectionName', collectionName)
+
+        return async ({ result }) => {
+            if (result.type === 'invalid') {
+                await Toast.fire({
+                    icon: 'error',
+                    title: 'Chyba',
+                    text: result.type.error
+                })
+                throw result.type.error
+            } else {
                 isOpen = false
-                dispatch('addedDocument')
+                await invalidateAll() // TODO: check if works
                 await Toast.fire({
                     icon: 'success',
                     title: 'Dokument úspešne vytvorený',
-                    text: `ID dokumentu: ${docRef.id}`
-                })
-            } else {
-                await Toast.fire({
-                    icon: 'error',
-                    title: 'Dáta dokumentu nezdpovedajú schéme'
+                    text: `ID dokumentu: ${result.data.id}`
                 })
             }
-        } catch (error) {
-            await Toast.fire({
-                icon: 'error',
-                title: 'Chyba',
-                text: error
-            })
-            throw error
         }
     }
 
@@ -51,7 +55,7 @@
         Nový dokument
     </ModalHeader>
     <ModalBody>
-        <form id="modal-form-{data.id}" on:submit|preventDefault={submit}>
+        <form id="modal-form-{data.id}" method="POST" action="?/createDocument" use:enhance={createDocument}>
             {#each schema.properties as property}
                 <Row class="border-bottom">
                     <Col>

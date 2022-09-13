@@ -1,5 +1,5 @@
 import { firestore } from '$lib/firebase'
-import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { collection, getDocs, query, orderBy, addDoc } from 'firebase/firestore'
 import config from '$lib/config'
 
 const getCollectionData = async (collectionName) => {
@@ -24,13 +24,33 @@ const getCollectionData = async (collectionName) => {
     })
     return collectionData
 }
+
+const createDocument = async ({ request }) => {
+    const data = await request.formData()
+    const collectionName = data.get('collectionName')
+    const schema = config.getCollection(collectionName).schema
+    const retrievedFormData = {}
+    schema.forEach(({ property, type }) => {
+        retrievedFormData[property] = type.type(data.get(property))
+    })
+    const collectionRef = collection(firestore, collectionName)
+    const docRef = await addDoc(collectionRef, retrievedFormData)
+    return {
+        id: docRef.id
+    }
+}
+
 export async function load ({ params }) {
     const collectionName = params.collection
     const collectionData = await getCollectionData(collectionName)
     const schema = config.getCollection(collectionName).schema.toJSON()
     return {
-        collectionData,
         collectionName,
+        collectionData,
         schema
     }
+}
+
+export const actions = {
+    createDocument
 }

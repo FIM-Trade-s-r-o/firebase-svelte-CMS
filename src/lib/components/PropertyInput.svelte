@@ -44,6 +44,6 @@
     <MarkdownInput bind:value/>
 {:else}
     <FormGroup>
-        <Input {type} bind:value required={isRequired} placeholder={isRequired ? 'povinné' : ''}/>
+        <Input name={property} {type} bind:value required={isRequired} placeholder={isRequired ? 'povinné' : ''}/>
     </FormGroup>
 {/if}
