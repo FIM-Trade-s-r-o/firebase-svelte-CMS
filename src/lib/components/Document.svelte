@@ -1,45 +1,65 @@
 <script lang="ts">
-    import type Schema from '$lib/schemas/lib'
-    import { Button, Col, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'sveltestrap'
-    import { doc, updateDoc, deleteDoc } from 'firebase/firestore'
     import PropertyInput from '$lib/components/PropertyInput.svelte'
-    import { firestore } from '$lib/firebase'
+    import { Button, Col, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'sveltestrap'
+    import type Schema from '$lib/schemas/lib'
     import { Toast } from '$lib/utils/alert'
-    import { createEventDispatcher } from 'svelte'
+    import { enhance } from '$app/forms'
+    import { invalidateAll } from '$app/navigation'
 
     export let collection: string
     export let schema: Schema
-    export let data: object
-    const documentRef = doc(firestore, collection, data.id)
-    const dispatch = createEventDispatcher()
+    export let document: object
 
     let isModalOpen = false
     const toggleModal = () => {
         isModalOpen = !isModalOpen
     }
-    const updateData = async () => {
-        if (schema.validate(data)) {
-            await updateDoc(documentRef, data)
-            toggleModal()
-            await Toast.fire({
-                title: 'Dokument upravený',
-                icon: 'success'
-            })
-        } else {
-            await Toast.fire({
+    const updateData = ({ data, cancel }) => {
+        const retrievedFormData = {}
+        schema.forEach(({ property, type }) => {
+            retrievedFormData[property] = type.type(data.get(property))
+        })
+        if (!schema.validate(retrievedFormData)) {
+            cancel()
+            Toast.fire({
                 icon: 'error',
                 title: 'Dáta dokumentu nezdpovedajú schéme'
             })
         }
+
+        data.set('collectionName', collection)
+        data.set('documentId', document.id)
+
+        return async ({ result }) => {
+            if (result.type === 'success') {
+                toggleModal()
+                await invalidateAll()
+                Toast.fire({
+                    title: 'Dokument upravený',
+                    icon: 'success'
+                })
+            }
+        }
     }
-    const deleteDocument = async () => {
-        await deleteDoc(documentRef)
-        toggleModal()
-        dispatch('deletedDocument')
-        await Toast.fire({
-            title: 'Dokument vymazaný',
-            icon: 'success'
-        })
+    const deleteDocument = ({ data }) => {
+        data.set('collectionName', collection)
+        data.set('documentId', document.id)
+
+        return async ({ result }) => {
+            if (result.type === 'success') {
+                toggleModal()
+                await invalidateAll()
+                Toast.fire({
+                    title: 'Dokument vymazaný',
+                    icon: 'success'
+                })
+            } else {
+                Toast.fire({
+                    title: 'Chyba pri vymazaní dokumentu',
+                    icon: 'error'
+                })
+            }
+        }
     }
 
 </script>
@@ -50,7 +70,7 @@
             <Row class="border-bottom">
                 {#each schema.properties as property}
                     <Col style="max-height: 10rem; overflow: auto;">
-                        {data[property]}
+                        {document[property]}
                     </Col>
                 {/each}
             </Row>
@@ -60,30 +80,32 @@
 
 <Modal isOpen={isModalOpen} toggle={toggleModal} fullscreen>
     <ModalHeader toggle={toggleModal}>
-        {data.id}
+        {document.id}
     </ModalHeader>
     <ModalBody>
-        <form id="modal-form-{data.id}" on:submit|preventDefault={updateData}>
+        <form id="modal-form-{document.id}" method="POST" action="?/updateDocument" use:enhance={updateData}>
             {#each schema.properties as property}
                 <Row class="border-bottom">
                     <Col>
                         <h4>
                             {property}:
                         </h4>
-                        <PropertyInput bind:value={data[property]} {schema} {property}/>
+                        <PropertyInput bind:value={document[property]} {schema} {property}/>
                     </Col>
                 </Row>
             {/each}
         </form>
     </ModalBody>
     <ModalFooter>
-        <Button on:click={deleteDocument} color="danger" class="me-auto">
-            <Icon name="trash"/>
-        </Button>
+        <form method="POST" action="?/deleteDocument" use:enhance={deleteDocument}>
+            <Button type="submit" color="danger" class="me-auto">
+                <Icon name="trash"/>
+            </Button>
+        </form>
         <Button color="secondary">
             Zrušiť
         </Button>
-        <Button color="success" type="submit" form="modal-form-{data.id}">
+        <Button type="submit" form="modal-form-{document.id}" color="success">
             <Icon name="check2-all"/>
         </Button>
     </ModalFooter>

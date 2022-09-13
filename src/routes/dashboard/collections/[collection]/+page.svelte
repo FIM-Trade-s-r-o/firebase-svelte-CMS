@@ -53,11 +53,11 @@
         {:then collection}
             <CollectionHeader {schema}/>
             {#each collection as document}
-                <Document collection={collectionName} {schema} data={document} on:deletedDocument={reload}/>
+                <Document collection={collectionName} {schema} {document} on:deletedDocument={reload}/>
             {:else}
                 <EmptyCollection />
             {/each}
-            <NewDocumentModal {collectionName} {schema} bind:isOpen={isNewDocumentModalOpen} on:addedDocument={reload}/>
+            <NewDocumentModal {collectionName} {schema} bind:isOpen={isNewDocumentModalOpen}/>
         {/await}
     </Col>
 </Row>

@@ -1,5 +1,5 @@
 import { firestore } from '$lib/firebase'
-import { collection, getDocs, query, orderBy, addDoc } from 'firebase/firestore'
+import {collection, getDocs, query, orderBy, addDoc, doc, updateDoc, deleteDoc} from 'firebase/firestore'
 import config from '$lib/config'
 
 const getCollectionData = async (collectionName) => {
@@ -40,6 +40,25 @@ const createDocument = async ({ request }) => {
     }
 }
 
+const updateDocument = async ({ request }) => {
+    const data = await request.formData()
+    const collectionName = data.get('collectionName')
+    const documentId = data.get('documentId')
+    const schema = config.getCollection(collectionName).schema
+    const retrievedFormData = {}
+    schema.forEach(({ property, type }) => {
+        retrievedFormData[property] = type.type(data.get(property))
+    })
+    await updateDoc(doc(firestore, collectionName, documentId), retrievedFormData)
+}
+
+const deleteDocument = async ({ request }) => {
+    const data = await request.formData()
+    const collectionName = data.get('collectionName')
+    const documentId = data.get('documentId')
+    await deleteDoc(doc(firestore, collectionName, documentId))
+}
+
 export async function load ({ params }) {
     const collectionName = params.collection
     const collectionData = await getCollectionData(collectionName)
@@ -52,5 +71,7 @@ export async function load ({ params }) {
 }
 
 export const actions = {
-    createDocument
+    createDocument,
+    updateDocument,
+    deleteDocument
 }
