@@ -23,7 +23,7 @@
 					</Col>
 				</Row>
 			</Button>
-			<Button href="/dashboard/storage/root" color="dark" outline class="w-100 rounded-0">
+			<Button href="/dashboard/storage" color="dark" outline class="w-100 rounded-0">
 				<Row class="justify-content-center">
 					<Col xs="auto" class="me-auto">
 						<Icon name="folder2" class="h4"/>
