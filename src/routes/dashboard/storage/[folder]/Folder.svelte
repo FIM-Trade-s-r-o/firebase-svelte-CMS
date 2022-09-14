@@ -7,14 +7,12 @@
         Icon, Button
     } from 'sveltestrap'
 
-    export let value
-
-    $: name = value.name
-    $: path = value.fullPath.replaceAll('/', '|')
+    export let path
+    export let name
 </script>
 
 <Col xs="12" sm="6" md="4" lg="3" xl="2" class="h-auto mb-4">
-    <Button href="/dashboard/storage/{path}" color="transparent" class="h-100 w-100 m-0 p-0">
+    <Button data-sveltekit-reload="" href="/dashboard/storage/{path}" color="transparent" class="h-100 w-100 m-0 p-0">
         <Card class="w-100 h-100">
             <CardBody class="d-flex justify-content-center">
                 <Icon name="folder" class="display-3"/>

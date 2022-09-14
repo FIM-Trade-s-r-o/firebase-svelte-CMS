@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { getDownloadURL, deleteObject } from 'firebase/storage'
-    import { createEventDispatcher } from 'svelte'
     import { Toast } from '$lib/utils/alert'
     import {
         Col,
@@ -11,19 +9,18 @@
         ListGroupItem
     } from 'sveltestrap'
     import ContextMenu from '$lib/components/ContextMenu.svelte'
+    import { invalidateAll } from '$app/navigation'
 
-    export let value
-    const dispatch = createEventDispatcher()
-    let name: string
+    export let name: string
+    export let url: string
     let contextMenuOpener: boolean
-    let url: string
 
     const openContextMenu = (event) => {
         contextMenuOpener = event
     }
     const deleteFile = async () => {
-        await deleteObject(value)
-        dispatch('delete')
+        // await deleteObject(value)
+        invalidateAll()
         await Toast.fire({
             title: 'Súbor úspešne vymazaný',
             icon: 'success'
@@ -37,12 +34,6 @@
             timer: 750
         })
     }
-    const getUrl = async (reference) => {
-        url = await getDownloadURL(reference)
-    }
-
-    $: getUrl(value)
-    $: name = value.name
 </script>
 
 <ContextMenu bind:opener={contextMenuOpener}>

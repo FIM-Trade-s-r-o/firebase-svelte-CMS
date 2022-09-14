@@ -1,9 +1,9 @@
 <script lang="ts">
-    import Folder from '$lib/components/Folder.svelte'
+    import File from './File.svelte'
 
     export let items: Array<string> = []
 </script>
 
 {#each items as item}
-    <Folder value={item}/>
+    <File {...item}/>
 {/each}
