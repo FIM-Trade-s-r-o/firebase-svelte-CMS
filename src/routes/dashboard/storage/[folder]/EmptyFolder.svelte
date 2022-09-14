@@ -7,17 +7,17 @@
     } from 'sveltestrap'
     import { enhance } from '$app/forms'
     import { Toast } from '$lib/utils/alert'
-    import { invalidateAll } from '$app/navigation'
+    import { goto } from '$app/navigation'
 
     export let path
+    export let backPath
 
-    const deleteThisFolder = async ({ data }) => {
+    const deleteThisFolder = ({ data }) => {
         data.set('path', path)
 
-        // TODO: await goBack()
         return ({ result }) => {
             if (result.type === 'success') {
-                invalidateAll()
+                goto(backPath, { replaceState: true })
                 Toast.fire({
                     title: 'Zložka úspešne vymazaná',
                     icon: 'success',
@@ -47,7 +47,7 @@
             {#if path !== 'root'}
                 <Row>
                     <Col>
-                        <form method="POST" action="?/deleteThisFolder" use:enhance={deleteThisFolder}>
+                        <form method="POST" action="?/deleteFolder" use:enhance={deleteThisFolder}>
                             <Button type="submit" color="danger" outline class="border-0 p-0">
                                 <Icon name="trash" class="display-4"/>
                             </Button>
