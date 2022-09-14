@@ -22,6 +22,7 @@
         return ({ result }) => {
             if (result.type === 'success') {
                 invalidateAll()
+                toggleModal()
                 Toast.fire({
                     title: 'Zložka úspešne vytvorená',
                     icon: 'success'
