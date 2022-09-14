@@ -1,9 +1,16 @@
-import {uploadString, uploadBytes, deleteObject, ref, listAll, getDownloadURL} from 'firebase/storage'
+import { uploadString, uploadBytes, deleteObject, ref, listAll, getDownloadURL } from 'firebase/storage'
 import { storage } from '$lib/firebase'
+
+const pathToSlashPath = (path) => {
+    return path.replaceAll('|', '/')
+}
+const pathToPipePath = (path) => {
+    return path.replaceAll('/', '|')
+}
 
 const newFolder = async ({ request }) => {
     const data = await request.formData()
-    const path = data.get('path')
+    const path = pathToSlashPath(data.get('path'))
     const folderName = data.get('folderName')
     if (folderName) {
         const directory = ref(storage, path)
@@ -14,15 +21,14 @@ const newFolder = async ({ request }) => {
 }
 const uploadFile = async (reference, file) => {
     const uploadRef = ref(reference, file.name)
-    await uploadBytes(uploadRef, file)
+    await uploadBytes(uploadRef, await file.arrayBuffer())
 }
 const newFile = async ({ request }) => {
     const data = await request.formData()
-    const path = data.get('path')
-    const files = data.get('files')
+    const path = pathToSlashPath(data.get('path'))
+    const files = data.getAll('files[]')
     const directory = ref(storage, path)
     if (files.length > 0) {
-        console.log(files)
         let uploads = []
         for (const file of files) {
             uploads = [
@@ -32,25 +38,24 @@ const newFile = async ({ request }) => {
         }
         await Promise.all(uploads)
         return {
-            filesLength: files.length
+            filesCount: files.length
         }
     } else {
         return {
-            filesLength: 0
+            filesCount: 0
         }
     }
 }
 const deleteFolder = async ({ request }) => {
     const data = await request.formData()
-    const path = data.get('path')
+    const path = pathToSlashPath(data.get('path'))
     const ghostFileRef = ref(storage, `${path}/.ghostfile`)
     await deleteObject(ghostFileRef)
 }
 
 export async function load ({ params }) {
-    const queryPath = (params.folder).replaceAll('|', '/')
-    const path = queryPath === 'root' ? '/' : queryPath
-    const reference = ref(storage, queryPath)
+    const path = pathToSlashPath(params.folder)
+    const reference = ref(storage, path.substring(1))
 
     const response = await listAll(reference)
 
@@ -62,7 +67,7 @@ export async function load ({ params }) {
             ...folders,
             {
                 name: folderRef.name,
-                path: folderRef.fullPath.replaceAll('/', '|')
+                path: pathToPipePath(`/${folderRef.fullPath}`)
             }
         ]
     })
@@ -70,19 +75,18 @@ export async function load ({ params }) {
         if (itemRef.name !== '.ghostfile') {
             filePromises = [
                 ...filePromises,
-                async () => {
+                (async () => {
                     return {
                         name: itemRef.name,
                         url: await getDownloadURL(itemRef)
                     }
-                }
+                })()
             ]
         }
     })
 
-
     return {
-        path,
+        path: pathToPipePath(path),
         folders,
         files: await Promise.all(filePromises)
     }

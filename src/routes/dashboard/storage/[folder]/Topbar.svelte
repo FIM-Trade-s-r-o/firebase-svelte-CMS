@@ -12,20 +12,9 @@
     import NewFile from './NewFile.svelte'
 
     export let path
+    export let backPath
     export let files
     export let folders
-
-    const getBackPath = (path) => {
-        if (path === '/') {
-            return '/dashboard'
-        } else if (path.shift(1).includes('/')) {
-            const newPath = path.slice(0, path.lastIndexOf('/'))
-            return `/dashboard/storage/${newPath.replaceAll('/', '|')}`
-        } else {
-            return '/dashboard/storage/root'
-        }
-    }
-    $: backPath = getBackPath(path)
 </script>
 
 <Row class="justify-content-end align-items-center bg-dark">

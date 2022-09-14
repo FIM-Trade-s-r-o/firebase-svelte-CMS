@@ -9,16 +9,27 @@
     import EmptyFolder from './EmptyFolder.svelte'
 
     export let data
-    const path = data.path
-    const folders = data.folders
-    const files = data.files
+
+    const getBackPath = (path) => {
+        if (path === '|') {
+            return '/dashboard'
+        } else if (path.includes('/')) {
+            return `/dashboard/storage|${path}`
+        } else {
+            return '/dashboard/storage/|'
+        }
+    }
+    $: path = data.path
+    $: folders = data.folders
+    $: files = data.files
+    $: backPath = getBackPath(path)
 </script>
 
 <div class="h-100 d-flex flex-column">
-    <Topbar {path} {folders} {files}/>
+    <Topbar {path} {backPath} {folders} {files}/>
     <Row class="flex-grow-1 pt-3">
         {#if folders.length === 0 && files.length === 0}
-            <EmptyFolder {path}/>
+            <EmptyFolder {path} {backPath}/>
         {/if}
         <Col>
             <Row>
