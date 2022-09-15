@@ -34,7 +34,7 @@
         <Col>
             <Row>
                 <FoldersList items={folders}/>
-                <FilesList items={files}/>
+                <FilesList {path} items={files}/>
             </Row>
         </Col>
     </Row>

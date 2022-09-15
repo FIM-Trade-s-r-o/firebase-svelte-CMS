@@ -10,16 +10,25 @@
     } from 'sveltestrap'
     import ContextMenu from '$lib/components/ContextMenu.svelte'
     import { invalidateAll } from '$app/navigation'
+    import { enhance } from '$app/forms'
 
+    export let path
     export let name: string
     export let url: string
     let contextMenuOpener: boolean
+    let deleteForm
 
     const openContextMenu = (event) => {
         contextMenuOpener = event
     }
     const deleteFile = async () => {
-        // await deleteObject(value)
+        const formData = new FormData(deleteForm)
+        const deleteRequest = await fetch('?/deleteFile', {
+            method: 'POST',
+            body: formData
+        })
+        const response = await deleteRequest.json()
+        console.log(response)
         invalidateAll()
         await Toast.fire({
             title: 'Súbor úspešne vymazaný',
@@ -60,3 +69,8 @@
         </Card>
     </a>
 </Col>
+
+<form bind:this={deleteForm} id="delete-{name}" method="POST" action="?/deleteFile" use:enhance={deleteFile} hidden>
+    <input name="path" value={path}>
+    <input name="name" value={name}>
+</form>

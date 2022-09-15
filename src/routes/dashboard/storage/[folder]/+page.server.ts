@@ -1,10 +1,10 @@
 import { uploadString, uploadBytes, deleteObject, ref, listAll, getDownloadURL } from 'firebase/storage'
 import { storage } from '$lib/firebase'
 
-const pathToSlashPath = (path) => {
+const pathToSlashPath = (path: string): string => {
     return path.replaceAll('|', '/')
 }
-const pathToPipePath = (path) => {
+const pathToPipePath = (path: string): string => {
     return path.replaceAll('/', '|')
 }
 
@@ -52,6 +52,13 @@ const deleteFolder = async ({ request }) => {
     const ghostFileRef = ref(storage, `${path}/.ghostfile`)
     await deleteObject(ghostFileRef)
 }
+const deleteFile = async ({ request }) => {
+    const data = await request.formData()
+    const path = pathToSlashPath(data.get('path'))
+    const name = data.get('name')
+    const ghostFileRef = ref(storage, `${path}/${name}`)
+    await deleteObject(ghostFileRef)
+}
 
 export async function load ({ params }) {
     const path = pathToSlashPath(params.folder)
@@ -95,5 +102,6 @@ export async function load ({ params }) {
 export const actions = {
     newFolder,
     newFile,
-    deleteFolder
+    deleteFolder,
+    deleteFile
 }
