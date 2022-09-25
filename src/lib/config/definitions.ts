@@ -2,6 +2,7 @@ import type Schema from '$lib/schemas/lib'
 import type { CollectionReference } from 'firebase/firestore'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { firestore } from '$lib/firebase'
+import jwt from 'jsonwebtoken'
 
 interface Sorting {
     property: string,
@@ -33,19 +34,24 @@ class Collection implements CollectionT {
     }
 }
 
+interface AdminAccount {
+    email: string,
+    password: string
+}
+
 interface GlobalConfig {
-    adminAccounts?: Array<string>,
+    adminAccounts?: Array<AdminAccount>,
     adminCollection?: string,
     collections: Array<Collection>
 }
 
 interface ConfigT {
-    isAdminAccount: (emailToCheck: string) => Promise<boolean>,
+    getAdminAccount: (emailToCheck: string) => Promise<AdminAccount | null>,
     getCollection: (name: string) => Collection
 }
 
 class Config implements ConfigT {
-    #adminAccounts: Array<string> | undefined
+    #adminAccounts: Array<AdminAccount> | undefined
     #adminCollection: CollectionReference | undefined
     collections: Array<Collection>
     constructor ({ adminAccounts, adminCollection, collections }: GlobalConfig) {
@@ -65,20 +71,35 @@ class Config implements ConfigT {
     }
 
     // Calling of this function must be on server side
-    async isAdminAccount (emailToCheck: string): Promise<boolean> {
+    async getAdminAccount (emailToCheck: string): Promise<AdminAccount | null> {
         if (this.#adminCollection) {
             const adminQuery = query(this.#adminCollection, where('email', '==', emailToCheck))
             const adminDocs = await getDocs(adminQuery)
 
-            return !adminDocs.empty
+            if (adminDocs.empty) {
+                return null
+            } else {
+                return {
+                    email: emailToCheck,
+                    password: adminDocs.docs[0].get('password')
+                }
+            }
         } else {
-            let match = false
-            this.#adminAccounts.forEach(email => {
-                if (email === emailToCheck) {
-                    match = true
+            let match = null
+            this.#adminAccounts.forEach(account => {
+                if (account.email === emailToCheck) {
+                    match = account
                 }
             })
             return match
+        }
+    }
+
+    login (adminAccount: AdminAccount, password: string) {
+        if (adminAccount.password === password) {
+            return jwt.sign(adminAccount.email, adminAccount.password, { expiresIn: `${10 * 60 * 1000}` })
+        } else {
+            throw new Error('Invalid password')
         }
     }
 

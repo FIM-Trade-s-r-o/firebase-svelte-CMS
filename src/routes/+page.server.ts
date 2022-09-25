@@ -11,10 +11,12 @@ const login = async ({ request }) => {
     const email = data.get('email')
     const password = data.get('password')
 
-    if (await config.isAdminAccount(email)) {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password)
+    const adminAccount = await config.getAdminAccount(email)
+    if (adminAccount) {
+        const token = config.login(adminAccount, email, password)
         return {
-            name: userCredential.user.displayName
+            name: email,
+            token
         }
     } else {
         throw invalid(400, { code: 'userIsNotAdmin', message: '' })
