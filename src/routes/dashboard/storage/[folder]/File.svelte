@@ -27,8 +27,7 @@
             method: 'POST',
             body: formData
         })
-        const response = await deleteRequest.json()
-        console.log(response)
+        await deleteRequest.json()
         invalidateAll()
         await Toast.fire({
             title: 'Súbor úspešne vymazaný',
