@@ -42,6 +42,7 @@ interface AdminAccount {
 interface GlobalConfig {
     adminAccounts?: Array<AdminAccount>,
     adminCollection?: string,
+    JWTSecret: string,
     collections: Array<Collection>
 }
 
@@ -51,10 +52,11 @@ interface ConfigT {
 }
 
 class Config implements ConfigT {
-    #adminAccounts: Array<AdminAccount> | undefined
-    #adminCollection: CollectionReference | undefined
-    collections: Array<Collection>
-    constructor ({ adminAccounts, adminCollection, collections }: GlobalConfig) {
+    readonly #adminAccounts: Array<AdminAccount> | undefined
+    readonly #adminCollection: CollectionReference | undefined
+    readonly #JWTSecret: string
+    readonly collections: Array<Collection>
+    constructor ({ adminAccounts, adminCollection, JWTSecret, collections }: GlobalConfig) {
         if (!adminAccounts && !adminCollection) {
             console.error('Bad confuguration, there are no admin accounts specified, neither collection of admins')
         }
@@ -64,6 +66,7 @@ class Config implements ConfigT {
         if (adminCollection) {
             this.#adminCollection = collection(firestore, adminCollection)
         }
+        this.#JWTSecret = JWTSecret
         this.collections = []
         for (const collection of collections) {
             this.collections.push(new Collection(collection))
@@ -84,23 +87,28 @@ class Config implements ConfigT {
                     password: adminDocs.docs[0].get('password')
                 }
             }
-        } else {
-            let match = null
-            this.#adminAccounts.forEach(account => {
+        } else if (this.#adminAccounts) {
+            for (const account of this.#adminAccounts) {
                 if (account.email === emailToCheck) {
-                    match = account
+                    return account
                 }
-            })
-            return match
+            }
+            return null
+        } else {
+            console.error('Invalid CMS configuration: missing admin definition')
         }
     }
 
     login (adminAccount: AdminAccount, password: string) {
         if (adminAccount.password === password) {
-            return jwt.sign(adminAccount.email, adminAccount.password, { expiresIn: `${10 * 60 * 1000}` })
+            return jwt.sign(adminAccount.email, this.#JWTSecret /* , { expiresIn: 10 * 60 * 1000 } */)
         } else {
             throw new Error('Invalid password')
         }
+    }
+
+    verifyRequest (token = '') {
+        return jwt.verify(token, this.#JWTSecret)
     }
 
     getCollection (name: string): Collection {

@@ -29,6 +29,7 @@
                 await handleAuthError(result.data.error)
             } else if (result.data) {
                 try {
+                    localStorage.setItem('jwt', result.data.token)
                     Toast.fire({
                         icon: 'success',
                         title: `Vitaj ${result.data.name}`
