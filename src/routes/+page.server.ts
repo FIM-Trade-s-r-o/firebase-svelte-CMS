@@ -6,15 +6,18 @@ import {
 } from '@firebase/auth'
 import { auth } from '$lib/firebase'
 
-const login = async ({ request }) => {
+const login = async ({ request, cookies }) => {
     const data = await request.formData()
     const email = data.get('email')
     const password = data.get('password')
 
-    if (await config.isAdminAccount(email)) {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password)
+    const adminAccount = await config.getAdminAccount(email)
+    if (adminAccount) {
+        const token = config.login(adminAccount, password)
+        cookies.set('sessionId', token)
         return {
-            name: userCredential.user.displayName
+            name: email,
+            token
         }
     } else {
         throw invalid(400, { code: 'userIsNotAdmin', message: '' })

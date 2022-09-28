@@ -2,6 +2,7 @@ import type Schema from '$lib/schemas/lib'
 import type { CollectionReference } from 'firebase/firestore'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { firestore } from '$lib/firebase'
+import jwt from 'jsonwebtoken'
 
 interface Sorting {
     property: string,
@@ -33,22 +34,29 @@ class Collection implements CollectionT {
     }
 }
 
+interface AdminAccount {
+    email: string,
+    password: string
+}
+
 interface GlobalConfig {
-    adminAccounts?: Array<string>,
+    adminAccounts?: Array<AdminAccount>,
     adminCollection?: string,
+    JWTSecret: string,
     collections: Array<Collection>
 }
 
 interface ConfigT {
-    isAdminAccount: (emailToCheck: string) => Promise<boolean>,
+    getAdminAccount: (emailToCheck: string) => Promise<AdminAccount | null>,
     getCollection: (name: string) => Collection
 }
 
 class Config implements ConfigT {
-    #adminAccounts: Array<string> | undefined
-    #adminCollection: CollectionReference | undefined
-    collections: Array<Collection>
-    constructor ({ adminAccounts, adminCollection, collections }: GlobalConfig) {
+    readonly #adminAccounts: Array<AdminAccount> | undefined
+    readonly #adminCollection: CollectionReference | undefined
+    readonly #JWTSecret: string
+    readonly collections: Array<Collection>
+    constructor ({ adminAccounts, adminCollection, JWTSecret, collections }: GlobalConfig) {
         if (!adminAccounts && !adminCollection) {
             console.error('Bad confuguration, there are no admin accounts specified, neither collection of admins')
         }
@@ -58,6 +66,7 @@ class Config implements ConfigT {
         if (adminCollection) {
             this.#adminCollection = collection(firestore, adminCollection)
         }
+        this.#JWTSecret = JWTSecret
         this.collections = []
         for (const collection of collections) {
             this.collections.push(new Collection(collection))
@@ -65,21 +74,41 @@ class Config implements ConfigT {
     }
 
     // Calling of this function must be on server side
-    async isAdminAccount (emailToCheck: string): Promise<boolean> {
+    async getAdminAccount (emailToCheck: string): Promise<AdminAccount | null> {
         if (this.#adminCollection) {
             const adminQuery = query(this.#adminCollection, where('email', '==', emailToCheck))
             const adminDocs = await getDocs(adminQuery)
 
-            return !adminDocs.empty
-        } else {
-            let match = false
-            this.#adminAccounts.forEach(email => {
-                if (email === emailToCheck) {
-                    match = true
+            if (adminDocs.empty) {
+                return null
+            } else {
+                return {
+                    email: emailToCheck,
+                    password: adminDocs.docs[0].get('password')
                 }
-            })
-            return match
+            }
+        } else if (this.#adminAccounts) {
+            for (const account of this.#adminAccounts) {
+                if (account.email === emailToCheck) {
+                    return account
+                }
+            }
+            return null
+        } else {
+            console.error('Invalid CMS configuration: missing admin definition')
         }
+    }
+
+    login (adminAccount: AdminAccount, password: string) {
+        if (adminAccount.password === password) {
+            return jwt.sign(adminAccount.email, this.#JWTSecret /* , { expiresIn: 10 * 60 * 1000 } */)
+        } else {
+            throw new Error('Invalid password')
+        }
+    }
+
+    verifyRequest (token = '') {
+        return jwt.verify(token, this.#JWTSecret)
     }
 
     getCollection (name: string): Collection {
