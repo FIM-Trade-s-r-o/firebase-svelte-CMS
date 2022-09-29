@@ -1,19 +1,17 @@
-import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
+import { initializeApp, cert } from 'firebase-admin/app'
+import { getFirestore } from 'firebase-admin/firestore'
+import { getStorage } from 'firebase-admin/storage'
 import firebaseConfig from './config.json'
 
-const app = initializeApp(firebaseConfig)
+const app = initializeApp({
+    credential: cert(firebaseConfig.credential),
+    ...firebaseConfig.rest
+})
 
-const auth = getAuth(app)
 const firestore = getFirestore(app)
-const storage = getStorage(app)
-
-auth.languageCode = 'en'
+const storage = getStorage(app).bucket()
 
 export {
-    auth,
     firestore,
     storage
 }

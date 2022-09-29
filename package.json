@@ -20,7 +20,7 @@
 		"eslint": "^8.19.0",
 		"eslint-config-standard": "^17.0.0",
 		"eslint-plugin-svelte3": "^4.0.0",
-		"firebase": "^9.6.6",
+		"firebase-admin": "^11.0.1",
 		"jsonwebtoken": "^8.5.1",
 		"sanitize-html": "^2.7.0",
 		"sass": "^1.49.7",
