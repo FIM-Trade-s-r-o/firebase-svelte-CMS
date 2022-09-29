@@ -1,10 +1,5 @@
 import config from '$lib/config'
 import { invalid } from '@sveltejs/kit'
-import {
-    sendPasswordResetEmail,
-    signInWithEmailAndPassword
-} from '@firebase/auth'
-import { auth } from '$lib/firebase'
 
 const login = async ({ request, cookies }) => {
     const data = await request.formData()
@@ -24,17 +19,7 @@ const login = async ({ request, cookies }) => {
     }
 }
 
-const resetPassword = async ({ request }) => {
-    const data = await request.formData()
-    const email = data.get('email')
-    try {
-        await sendPasswordResetEmail(auth, email)
-    } catch (error) {
-        throw invalid(400, { error })
-    }
-}
 
 export const actions = {
-    login,
-    resetPassword
+    login
 }

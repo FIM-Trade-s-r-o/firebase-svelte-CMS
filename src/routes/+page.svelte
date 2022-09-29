@@ -4,25 +4,16 @@
         Col,
         Button,
         FormGroup,
-        Input,
-        Modal,
-        ModalHeader,
-        ModalBody
+        Input
     } from 'sveltestrap'
-    // import { goto } from '$app/navigation'
     import { handleAuthError } from '$lib/firebase/errorHandling'
-    // import { browser } from '$app/environment'
     import { enhance } from '$app/forms'
     import { Toast } from '$lib/utils/alert'
     import { invalidateAll } from '$app/navigation'
 
-    let resetModalIsOpen = false
     let email = ''
     let password = ''
 
-    const togglePasswordResetModal = () => {
-        resetModalIsOpen = !resetModalIsOpen
-    }
     const login = () => {
         return async ({ result }) => {
             if (result.type === 'invalid') {
@@ -41,23 +32,7 @@
             }
         }
     }
-    const resetPassword = () => {
-        return async ({ result }) => {
-            if (result.type === 'invalid') {
-                await handleAuthError(result.data.error)
-            } else {
-                togglePasswordResetModal()
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Email na reset hesla bol odoslaný'
-                })
-            }
-        }
-    }
 
-    // $: if ($user && browser) {
-    //     goto('/dashboard')
-    // }
 </script>
 
 <Row class="min-h-100 align-content-center justify-content-center" style="padding-bottom: 30%">
@@ -98,36 +73,7 @@
                         PRIHLÁSIŤ SA
                     </Button>
                 </Col>
-                <Col xs="12">
-                    <Button color="link" type="button" on:click={togglePasswordResetModal} class="link-dark">
-                        Neviem svoje heslo
-                    </Button>
-                </Col>
             </Row>
         </form>
     </Col>
 </Row>
-
-<Modal isOpen={resetModalIsOpen} toggle={togglePasswordResetModal}>
-    <ModalHeader toggle={togglePasswordResetModal}>
-        Reset hesla
-    </ModalHeader>
-    <ModalBody>
-        <form method="POST" action="?/resetPassword" use:enhance={resetPassword}>
-            <FormGroup>
-                <label for="resetEmail">
-                    E-mail
-                </label>
-                <Input bind:value={email} id="resetEmail" name="resetEmail" type="email" required
-                       class="rounded-0 bg-light"/>
-            </FormGroup>
-            <Row class="justify-content-end">
-                <Col xs="auto">
-                    <Button type="submit" color="dark">
-                        Resetovať
-                    </Button>
-                </Col>
-            </Row>
-        </form>
-    </ModalBody>
-</Modal>
