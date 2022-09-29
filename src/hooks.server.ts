@@ -1,24 +1,12 @@
 import config from '$lib/config'
-import {redirect} from '@sveltejs/kit'
-
-const checkAuth = (token: string) => {
-    console.log('handleFetch', token)
-    const result = config.verifyRequest(token)
-    console.log(result)
-}
+import { redirect } from '@sveltejs/kit'
 
 export async function handle ({ event, resolve }) {
-
     const sessionId = event.cookies.get('sessionId')
-    let authenticated = true
-    try {
-        checkAuth(sessionId)
-    } catch (error) {
-        console.log(error)
-        authenticated = false
-    }
-    if (!authenticated) {
-        return redirect(300, '/')
+    const isUserAdmin = await config.verifyRequest(sessionId)
+    console.log(isUserAdmin, sessionId)
+    if (!isUserAdmin) {
+        throw redirect(300, '/')
     }
     const response = await resolve(event)
     return response

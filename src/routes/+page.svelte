@@ -7,9 +7,8 @@
         Input
     } from 'sveltestrap'
     import { handleAuthError } from '$lib/firebase/errorHandling'
-    import { enhance } from '$app/forms'
+    import { applyAction, enhance } from '$app/forms'
     import { Toast } from '$lib/utils/alert'
-    import { invalidateAll } from '$app/navigation'
 
     let email = ''
     let password = ''
@@ -18,18 +17,12 @@
         return async ({ result }) => {
             if (result.type === 'invalid') {
                 await handleAuthError(result.data.error)
-            } else if (result.data) {
-                try {
-                    localStorage.setItem('jwt', result.data.token)
-                    Toast.fire({
-                        icon: 'success',
-                        title: `Vitaj ${result.data.name}`
-                    })
-                    invalidateAll()
-                } catch (error) {
-                    await handleAuthError(error)
-                }
             }
+            await applyAction(result)
+            Toast.fire({
+                icon: 'success',
+                title: 'Vitaj'
+            })
         }
     }
 

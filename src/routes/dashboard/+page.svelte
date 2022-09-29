@@ -7,8 +7,7 @@
     } from 'sveltestrap'
     import { Toast } from '$lib/utils/alert'
     import { handleAuthError } from '$lib/firebase/errorHandling'
-    import { enhance } from '$app/forms'
-    import { invalidateAll } from '$app/navigation'
+    import { applyAction, enhance } from '$app/forms'
 
     export let data
 
@@ -17,7 +16,7 @@
             if (result.type === 'invalid') {
                 await handleAuthError(result.data.error)
             } else {
-                invalidateAll()
+                await applyAction(result)
                 Toast.fire({
                     icon: 'success',
                     title: 'Úspešné odhlásenie'
@@ -31,7 +30,7 @@
     <Row class="justify-content-between align-items-center bg-dark">
         <Col xs="auto" class="text-white">
 	        <h4 class="my-3">
-		        {data.user.displayName || ''}
+		        {data?.user?.displayName || ''}
 	        </h4>
         </Col>
         <Col xs="auto">

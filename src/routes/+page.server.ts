@@ -1,5 +1,5 @@
 import config from '$lib/config'
-import { invalid } from '@sveltejs/kit'
+import { invalid, redirect } from '@sveltejs/kit'
 
 const login = async ({ request, cookies }) => {
     const data = await request.formData()
@@ -10,10 +10,7 @@ const login = async ({ request, cookies }) => {
     if (adminAccount) {
         const token = config.login(adminAccount, password)
         cookies.set('sessionId', token)
-        return {
-            name: email,
-            token
-        }
+        throw redirect(300, '/dashboard')
     } else {
         throw invalid(400, { code: 'userIsNotAdmin', message: '' })
     }

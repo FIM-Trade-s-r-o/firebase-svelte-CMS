@@ -101,14 +101,27 @@ class Config implements ConfigT {
 
     login (adminAccount: AdminAccount, password: string) {
         if (adminAccount.password === password) {
-            return jwt.sign(adminAccount.email, this.#JWTSecret /* , { expiresIn: 10 * 60 * 1000 } */)
+            return jwt.sign(adminAccount, this.#JWTSecret, { expiresIn: 30 * 60 * 1000 })
         } else {
             throw new Error('Invalid password')
         }
     }
 
-    verifyRequest (token = '') {
-        return jwt.verify(token, this.#JWTSecret)
+    async verifyRequest (token = ''): Promise<boolean> {
+        if (token !== undefined || token !== '') {
+            let account: AdminAccount
+            try {
+                account = <AdminAccount>jwt.verify(token, this.#JWTSecret)
+            } catch (error) {
+                console.log(error)
+                return false
+            }
+            if (account?.email && account?.password) {
+                const adminAccount = await this.getAdminAccount(account.email)
+                return account.email === adminAccount.email && account.password === adminAccount.password
+            }
+        }
+        return false
     }
 
     getCollection (name: string): Collection {
