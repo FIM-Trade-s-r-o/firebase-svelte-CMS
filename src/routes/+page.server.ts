@@ -1,6 +1,14 @@
 import config from '$lib/config'
 import { invalid, redirect } from '@sveltejs/kit'
 
+export async function load ({ cookies }) {
+    const sessionId = cookies.get('sessionId')
+    const isUserAdmin = await config.verifyRequest(sessionId)
+    if (isUserAdmin) {
+        throw redirect(300, '/dashboard')
+    }
+}
+
 const login = async ({ request, cookies }) => {
     const data = await request.formData()
     const email = data.get('email')

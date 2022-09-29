@@ -108,7 +108,7 @@ class Config implements ConfigT {
     }
 
     async verifyRequest (token = ''): Promise<boolean> {
-        if (token !== undefined || token !== '') {
+        if (token !== undefined && token !== '') {
             let account: AdminAccount
             try {
                 account = <AdminAccount>jwt.verify(token, this.#JWTSecret)
