@@ -10,7 +10,7 @@
 		"CMS:check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
-		"@sveltejs/kit": "1.0.0-next.481",
+		"@sveltejs/kit": "1.0.0-next.505",
 		"@types/sanitize-html": "^2.6.2",
 		"@typescript-eslint/eslint-plugin": "^5.30.3",
 		"@typescript-eslint/parser": "^5.30.3",

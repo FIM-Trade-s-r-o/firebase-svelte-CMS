@@ -1,4 +1,5 @@
 import type Schema from '$lib/schemas/lib'
+// TODO: migrate this to admin SDK
 import type { CollectionReference } from 'firebase/firestore'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { firestore } from '$lib/firebase'
