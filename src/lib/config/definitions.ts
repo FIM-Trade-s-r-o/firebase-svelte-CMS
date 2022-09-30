@@ -1,7 +1,7 @@
 import type Schema from '$lib/schemas/lib'
 // TODO: migrate this to admin SDK
-import type { CollectionReference } from 'firebase/firestore'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import type { CollectionReference } from 'firebase-admin/firestore'
+// import { collection, getDocs, query, where } from 'firebase-admin/firestore'
 import { firestore } from '$lib/firebase'
 import jwt from 'jsonwebtoken'
 
@@ -65,7 +65,8 @@ class Config implements ConfigT {
             this.#adminAccounts = adminAccounts
         }
         if (adminCollection) {
-            this.#adminCollection = collection(firestore, adminCollection)
+            this.#adminCollection = firestore.collection(adminCollection)
+            // this.#adminCollection = collection(firestore, adminCollection)
         }
         this.#JWTSecret = JWTSecret
         this.collections = []
@@ -77,8 +78,10 @@ class Config implements ConfigT {
     // Calling of this function must be on server side
     async getAdminAccount (emailToCheck: string): Promise<AdminAccount | null> {
         if (this.#adminCollection) {
-            const adminQuery = query(this.#adminCollection, where('email', '==', emailToCheck))
-            const adminDocs = await getDocs(adminQuery)
+            const adminQuery = this.#adminCollection.where('email', '==', emailToCheck)
+            const adminDocs = await adminQuery.get()
+            // const adminQuery = query(this.#adminCollection, where('email', '==', emailToCheck))
+            // const adminDocs = await getDocs(adminQuery)
 
             if (adminDocs.empty) {
                 return null
