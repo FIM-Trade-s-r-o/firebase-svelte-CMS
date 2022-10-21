@@ -47,6 +47,10 @@ interface GlobalConfig {
     collections: Array<Collection>
 }
 
+interface User {
+    name: string
+}
+
 interface ConfigT {
     getAdminAccount: (emailToCheck: string) => Promise<AdminAccount | null>,
     getCollection: (name: string) => Collection
@@ -111,21 +115,28 @@ class Config implements ConfigT {
         }
     }
 
-    async verifyRequest (token = ''): Promise<boolean> {
+    async verifyRequest (token = ''): Promise<User | null> {
         if (token !== undefined && token !== '') {
             let account: AdminAccount
             try {
                 account = <AdminAccount>jwt.verify(token, this.#JWTSecret)
             } catch (error) {
                 console.log(error)
-                return false
+                return null
             }
             if (account?.email && account?.password) {
                 const adminAccount = await this.getAdminAccount(account.email)
-                return account.email === adminAccount.email && account.password === adminAccount.password
+                const userIsAdmin = account.email === adminAccount.email && account.password === adminAccount.password
+                if (userIsAdmin) {
+                    return {
+                        name: account.email
+                    }
+                } else {
+                    return null
+                }
             }
         }
-        return false
+        return null
     }
 
     getCollection (name: string): Collection {

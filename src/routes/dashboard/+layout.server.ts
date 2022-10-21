@@ -1,18 +1,12 @@
-import config from '$lib/config'
 import { redirect } from '@sveltejs/kit'
 
 
-export async function load ({ cookies }) {
-    const sessionId = cookies.get('sessionId')
-    const isUserAdmin = await config.verifyRequest(sessionId)
-    if (!isUserAdmin) {
+export async function load ({ locals }) {
+    if (!locals.user) {
         throw redirect(300, '/')
     }
-    // TODO: email from token
     return {
-        user: {
-            displayName: ''
-        }
+        user: locals.user
     }
 }
 

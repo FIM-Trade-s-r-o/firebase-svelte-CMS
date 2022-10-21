@@ -30,7 +30,7 @@
     <Row class="justify-content-between align-items-center bg-dark">
         <Col xs="auto" class="text-white">
 	        <h4 class="my-3">
-		        {data?.user?.displayName || ''}
+		        {data?.user?.name || ''}
 	        </h4>
         </Col>
         <Col xs="auto">

@@ -1,10 +1,8 @@
 import config from '$lib/config'
 import { invalid, redirect } from '@sveltejs/kit'
 
-export async function load ({ cookies }) {
-    const sessionId = cookies.get('sessionId')
-    const isUserAdmin = await config.verifyRequest(sessionId)
-    if (isUserAdmin) {
+export async function load ({ locals }) {
+    if (locals.user) {
         throw redirect(300, '/dashboard')
     }
 }
@@ -18,7 +16,7 @@ const login = async ({ request, cookies }) => {
     if (adminAccount) {
         const token = config.login(adminAccount, password)
         cookies.set('sessionId', token)
-        throw redirect(300, '/dashboard')
+        throw redirect(302, '/dashboard')
     } else {
         throw invalid(400, { code: 'userIsNotAdmin', message: '' })
     }
