@@ -1,7 +1,7 @@
 import config from '$lib/config'
 
 export async function handle ({ event, resolve }) {
-    const sessionId = event.cookies.get('sessionId')
+    const sessionId = event.cookies.get('__session')
     const user = await config.verifyRequest(sessionId)
     event.locals.user = user
     return await resolve(event)
@@ -13,10 +13,4 @@ export function getSession ({ locals }) {
             ...locals.user
         }
     }
-}
-
-export async function handleFetch ({ event, request, fetch }) {
-    request.headers.set('cookie', event.request.headers.get('cookie'))
-
-    return fetch(request)
 }

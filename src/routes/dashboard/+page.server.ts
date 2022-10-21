@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit'
 
 const logOut = async ({ cookies }) => {
-    cookies.delete('sessionId')
+    cookies.delete('__session')
     throw redirect(300, '/')
 }
 

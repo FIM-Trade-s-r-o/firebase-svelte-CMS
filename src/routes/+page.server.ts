@@ -15,7 +15,7 @@ const login = async ({ request, cookies }) => {
     const adminAccount = await config.getAdminAccount(email)
     if (adminAccount) {
         const token = config.login(adminAccount, password)
-        cookies.set('sessionId', token)
+        cookies.set('__session', token)
         throw redirect(302, '/dashboard')
     } else {
         throw invalid(400, { code: 'userIsNotAdmin', message: '' })

@@ -6,6 +6,7 @@
 		"CMS:build": "vite build",
 		"CMS:package": "svelte-kit package",
 		"CMS:preview": "vite preview",
+		"CMS:deploy": "firebase deploy --only hosting,functions:cms",
 		"CMS:check": "svelte-check --tsconfig ./tsconfig.json",
 		"CMS:check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
 	},
