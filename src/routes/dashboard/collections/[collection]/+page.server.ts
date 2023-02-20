@@ -66,7 +66,7 @@ const deleteDocument = async ({ request }) => {
 
 export async function load ({ params }) {
     const collectionName = params.collection
-    const collectionData = await getCollectionData(collectionName)
+    const collectionData = getCollectionData(collectionName)
     const schema = config.getCollection(collectionName).schema.toJSON()
     return {
         collectionName,

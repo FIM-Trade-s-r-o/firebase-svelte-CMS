@@ -134,7 +134,7 @@ export async function load ({ params }) {
     return {
         path: pathToPipePath(path),
         folders,
-        files: await Promise.all(filePromises)
+        files: Promise.all(filePromises)
     }
 }
 

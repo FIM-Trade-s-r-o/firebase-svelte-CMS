@@ -3,7 +3,7 @@
         Row,
         Col,
         Button,
-        Icon, Spinner
+        Icon
     } from 'sveltestrap'
     import Document from '$lib/components/Document.svelte'
     import EmptyCollection from '$lib/components/EmptyCollection.svelte'
@@ -13,8 +13,6 @@
     import Schema from '$lib/schemas/lib'
 
     export let data
-    const collectionData: object = data.collectionData
-    const collectionName: string = data.collectionName
     const schema = new Schema(data.schema, true)
     let isNewDocumentModalOpen = false
     const openNewDocumentModal = () => {
@@ -28,7 +26,7 @@
 <Row class="justify-content-end align-items-center bg-dark">
     <Col class="text-white">
         <h4 class="my-3">
-            {collectionName}
+            {data.collectionName}
         </h4>
     </Col>
     <Col xs="auto">
@@ -44,20 +42,12 @@
 </Row>
 <Row class="flex-grow-1">
     <Col xs="12">
-        {#await collectionData}
-	        <Row class="h-100 justify-content-center align-items-center">
-		        <Col xs="auto">
-			        <Spinner type="grow"/>
-		        </Col>
-	        </Row>
-        {:then collection}
-            <CollectionHeader {schema}/>
-            {#each collection as document}
-                <Document collection={collectionName} {schema} {document} on:deletedDocument={reload}/>
-            {:else}
-                <EmptyCollection />
-            {/each}
-            <NewDocumentModal {collectionName} {schema} bind:isOpen={isNewDocumentModalOpen}/>
-        {/await}
+        <CollectionHeader {schema}/>
+        {#each data.collectionData as document}
+            <Document collection={data.collectionName} {schema} {document} on:deletedDocument={reload}/>
+        {:else}
+            <EmptyCollection />
+        {/each}
+        <NewDocumentModal collectionName={data.collectionName} {schema} bind:isOpen={isNewDocumentModalOpen}/>
     </Col>
 </Row>
