@@ -13,15 +13,15 @@
 
     const logOut = () => {
         return async ({ result }) => {
-            if (result.type === 'invalid') {
+            if (result.type === 'failure') {
                 await handleAuthError(result.data.error)
-            } else {
-                await applyAction(result)
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Úspešné odhlásenie'
-                })
+                return
             }
+            Toast.fire({
+                icon: 'success',
+                title: 'Úspešné odhlásenie'
+            })
+            await applyAction(result)
         }
     }
 </script>
@@ -35,7 +35,7 @@
         </Col>
         <Col xs="auto">
             <form method="POST" action="?/logOut" use:enhance={logOut}>
-                <Button on:click={logOut} outline color="warning" class="border-0 m-2">
+                <Button outline color="warning" class="border-0 m-2">
                     <Icon name="box-arrow-in-right"/>
                 </Button>
             </form>

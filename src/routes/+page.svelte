@@ -15,8 +15,9 @@
 
     const login = () => {
         return async ({ result }) => {
-            if (result.type === 'invalid') {
-                await handleAuthError(result.data.error)
+            if (result.type === 'failure') {
+                await handleAuthError(result.data)
+                return
             }
             await applyAction(result)
             Toast.fire({

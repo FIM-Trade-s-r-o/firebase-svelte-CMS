@@ -44,7 +44,7 @@ interface GlobalConfig {
     adminAccounts?: Array<AdminAccount>,
     adminCollection?: string,
     JWTSecret: string,
-    collections: Array<Collection>
+    collections: Array<CollectionT>
 }
 
 interface User {
@@ -111,7 +111,7 @@ class Config implements ConfigT {
         if (adminAccount.password === password) {
             return jwt.sign(adminAccount, this.#JWTSecret, { expiresIn: 30 * 60 * 1000 })
         } else {
-            throw new Error('Invalid password')
+            throw new Error('invalid-password')
         }
     }
 
@@ -157,4 +157,4 @@ class Config implements ConfigT {
 }
 
 export default Config
-export type { ConfigT }
+export type { ConfigT, CollectionT }

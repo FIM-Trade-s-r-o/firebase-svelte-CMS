@@ -1,5 +1,5 @@
 import config from '$lib/config'
-import { invalid, redirect } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 
 export async function load ({ locals }) {
     if (locals.user) {
@@ -12,14 +12,22 @@ const login = async ({ request, cookies }) => {
     const email = data.get('email')
     const password = data.get('password')
 
-    const adminAccount = await config.getAdminAccount(email)
-    if (adminAccount) {
-        const token = config.login(adminAccount, password)
-        cookies.set('__session', token)
-        throw redirect(302, '/dashboard')
-    } else {
-        throw invalid(400, { code: 'userIsNotAdmin', message: '' })
+    let adminAccount, token
+    try {
+        adminAccount = await config.getAdminAccount(email)
+    } catch (error) {
+        return fail(404, { code: 'cantFindAdminAccount', message: '' })
     }
+    if (!adminAccount) {
+        return fail(400, { code: 'userIsNotAdmin', message: '' })
+    }
+    try {
+        token = config.login(adminAccount, password)
+    } catch {
+        return fail(400, { code: 'wrongPassword', message: '' })
+    }
+    cookies.set('__session', token)
+    throw redirect(302, '/dashboard')
 }
 
 

@@ -1,9 +1,9 @@
-import { initializeApp, cert } from 'firebase-admin/app'
+import { initializeApp, cert, getApps } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import firebaseConfig from './config.json'
 
-const app = initializeApp({
+const app = getApps()[0] || initializeApp({
     credential: cert(firebaseConfig.credential),
     ...firebaseConfig.rest
 })
