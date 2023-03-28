@@ -77,7 +77,7 @@ const listDirectory = async (prefix: string, pageToken) => {
     return {
         folders,
         files: await Promise.all(filePromises),
-        nextPageToken: response[1].pageToken
+        nextPageToken: response[2]?.nextPageToken
     }
 }
 
@@ -98,7 +98,7 @@ export async function load ({ params, url }) {
 
 const getMoreFiles = async ({ request, params }) => {
     const data = await request.formData()
-    const pageToken = data.get('pageToken')
+    const pageToken = data.get('nextPageToken')
     const path = pathToSlashPath(params.folder)
     const { folders, files, nextPageToken } = await listDirectory(path.substring(1), pageToken)
     return {

@@ -36,7 +36,9 @@
             <Row>
                 <FoldersList items={data.folders}/>
                 <FilesList path={data.path} items={data.files}/>
-                <LoadMoreFiles path={data.path} bind:folders={data.folders} bind:files={data.files} bind:nextPageToken={data.nextPageToken}/>
+                {#if data.nextPageToken}
+                    <LoadMoreFiles path={data.path} bind:folders={data.folders} bind:files={data.files} bind:nextPageToken={data.nextPageToken}/>
+                {/if}
             </Row>
         </Col>
     </Row>
