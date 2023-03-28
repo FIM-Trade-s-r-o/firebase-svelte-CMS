@@ -8,6 +8,106 @@ const pathToPipePath = (path: string): string => {
     return path.replaceAll('/', '|')
 }
 
+const listDirectory = async (prefix: string, pageToken) => {
+    // const reference = ref(storage, path.substring(1))
+
+    // const response = await listAll(reference)
+    const response = await storage.getFiles({ prefix, delimiter: '/', autoPaginate: true, maxResults: 23, pageToken })
+
+    let folders = []
+    let filePromises = []
+
+    // response.prefixes.forEach((folderRef) => {
+    //     folders = [
+    //         ...folders,
+    //         {
+    //             name: folderRef.name,
+    //             path: pathToPipePath(`/${folderRef.fullPath}`)
+    //         }
+    //     ]
+    // })
+    // response.items.forEach((itemRef) => {
+    //     if (itemRef.name !== '.ghostfile') {
+    //         filePromises = [
+    //             ...filePromises,
+    //             (async () => {
+    //                 return {
+    //                     name: itemRef.name,
+    //                     url: await getDownloadURL(itemRef)
+    //                 }
+    //             })()
+    //         ]
+    //     }
+    // })
+
+
+    // console.log(response)
+    const prefixes = response[2].prefixes || []
+    const files = response[0]
+
+    // console.log(prefixes, '\n\n\n', files)
+
+    prefixes.forEach((folderRef) => {
+        console.log(folderRef)
+        folders = [
+            ...folders,
+            {
+                name: folderRef,
+                path: pathToPipePath(`/${folderRef}`)
+                // name: folderRef.name,
+                // path: pathToPipePath(`/${folderRef.fullPath}`)
+            }
+        ]
+    })
+    files.forEach((itemRef) => {
+        if (itemRef.name !== '.ghostfile') {
+            filePromises = [
+                ...filePromises,
+                (async () => {
+                    await itemRef.makePublic()
+                    return {
+                        name: itemRef.name,
+                        url: itemRef.publicUrl()
+                    }
+                })()
+            ]
+        }
+    })
+
+    return {
+        folders,
+        files: await Promise.all(filePromises),
+        nextPageToken: response[1].pageToken
+    }
+}
+
+export async function load ({ params, url }) {
+    const path = pathToSlashPath(params.folder)
+    // console.log(params.folder, path.substring(1))
+    const pageToken = url.searchParams.get('pageToken') || ''
+
+    const { folders, files, nextPageToken } = await listDirectory(path.substring(1), pageToken)
+
+    return {
+        path: pathToPipePath(path),
+        folders,
+        files,
+        nextPageToken
+    }
+}
+
+const getMoreFiles = async ({ request, params }) => {
+    const data = await request.formData()
+    const pageToken = data.get('pageToken')
+    const path = pathToSlashPath(params.folder)
+    const { folders, files, nextPageToken } = await listDirectory(path.substring(1), pageToken)
+    return {
+        folders,
+        files,
+        nextPageToken
+    }
+}
+
 const newFolder = async ({ request }) => {
     const data = await request.formData()
     const path = pathToSlashPath(data.get('path'))
@@ -64,81 +164,8 @@ const deleteFile = async ({ request }) => {
     // await deleteObject(ghostFileRef)
 }
 
-export async function load ({ params }) {
-    const path = pathToSlashPath(params.folder)
-    // const reference = ref(storage, path.substring(1))
-
-    // const response = await listAll(reference)
-    const response = await storage.getFiles({ prefix: path.substring(1), delimiter: '/', autoPaginate: false })
-    console.log(params.folder, path.substring(1))
-
-    let folders = []
-    let filePromises = []
-
-    // response.prefixes.forEach((folderRef) => {
-    //     folders = [
-    //         ...folders,
-    //         {
-    //             name: folderRef.name,
-    //             path: pathToPipePath(`/${folderRef.fullPath}`)
-    //         }
-    //     ]
-    // })
-    // response.items.forEach((itemRef) => {
-    //     if (itemRef.name !== '.ghostfile') {
-    //         filePromises = [
-    //             ...filePromises,
-    //             (async () => {
-    //                 return {
-    //                     name: itemRef.name,
-    //                     url: await getDownloadURL(itemRef)
-    //                 }
-    //             })()
-    //         ]
-    //     }
-    // })
-
-
-    const prefixes = response[2].prefixes || []
-    const files = response[0]
-
-    // console.log(prefixes, '\n\n\n', files)
-
-    prefixes.forEach((folderRef) => {
-        console.log(folderRef)
-        folders = [
-            ...folders,
-            {
-                name: folderRef,
-                path: pathToPipePath(`/${folderRef}`)
-                // name: folderRef.name,
-                // path: pathToPipePath(`/${folderRef.fullPath}`)
-            }
-        ]
-    })
-    files.forEach((itemRef) => {
-        if (itemRef.name !== '.ghostfile') {
-            filePromises = [
-                ...filePromises,
-                (async () => {
-                    await itemRef.makePublic()
-                    return {
-                        name: itemRef.name,
-                        url: itemRef.publicUrl()
-                    }
-                })()
-            ]
-        }
-    })
-
-    return {
-        path: pathToPipePath(path),
-        folders,
-        files: Promise.all(filePromises)
-    }
-}
-
 export const actions = {
+    getMoreFiles,
     newFolder,
     newFile,
     deleteFolder,

@@ -7,6 +7,7 @@
     import FilesList from './FilesList.svelte'
     import Topbar from './Topbar.svelte'
     import EmptyFolder from './EmptyFolder.svelte'
+    import LoadMoreFiles from './LoadMoreFiles.svelte'
 
     export let data
 
@@ -19,22 +20,23 @@
             return '/dashboard/storage/|'
         }
     }
-    $: path = data.path
-    $: folders = data.folders
-    $: files = data.files
-    $: backPath = getBackPath(path)
+
+    let backPath = getBackPath(data.path)
+
+    $: backPath = getBackPath(data.path)
 </script>
 
 <div class="h-100 d-flex flex-column">
-    <Topbar {path} {backPath} {folders} {files}/>
+    <Topbar path={data.path} {backPath} folders={data.folders} files={data.files}/>
     <Row class="flex-grow-1 pt-3">
-        {#if folders.length === 0 && files.length === 0}
-            <EmptyFolder {path} {backPath}/>
+        {#if data.folders.length === 0 && data.files.length === 0}
+            <EmptyFolder path={data.path} {backPath}/>
         {/if}
         <Col>
             <Row>
-                <FoldersList items={folders}/>
-                <FilesList {path} items={files}/>
+                <FoldersList items={data.folders}/>
+                <FilesList path={data.path} items={data.files}/>
+                <LoadMoreFiles path={data.path} bind:folders={data.folders} bind:files={data.files} bind:nextPageToken={data.nextPageToken}/>
             </Row>
         </Col>
     </Row>
